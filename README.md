@@ -17,7 +17,7 @@ cd touchpad-gesture-customization
 npm install
 npm run update
 ```
-2. Log out and log in **or** just restart session (X11)
+2. Log out and log
 3. Enable extension via extensions app or via command line
 ```
 gnome-extensions enable touchpad-gesture-customization@coooolapps.com
@@ -38,6 +38,8 @@ gnome-extensions enable touchpad-gesture-customization@coooolapps.com
 | Pinch Gesture | Modes   | Fingers |
 | :------------ | :------ | :------ |
 | Show Desktop  | Desktop | 3/4     |
+| Close Window  | Desktop | 3/4     |
+| Close Tab     | Desktop | 3/4     |
 
 | Application Gestures (Configurable) |
 | :--- |
@@ -45,6 +47,8 @@ gnome-extensions enable touchpad-gesture-customization@coooolapps.com
 | Switch to next or previous image in image viewer |
 | Switch to next or previous audio |
 | Change tabs |
+
+**Note**: **Pich gesture** and **Application gesture** currently only work if the mouse pointer is pointed at the desktop or top panel.
 
 #### For activating tiling gesture (inverted T gesture)
 1. Do a 3-finger vertical downward gesture on a unmaximized window
@@ -55,7 +59,7 @@ gnome-extensions enable touchpad-gesture-customization@coooolapps.com
 * Minimize gesture is available if you have dash-to-dock/panel or similar extension enabled.
 * To activate application gesture, hold for few moments(configurable) before swiping
 * Tiling gesture can't be activated if you enable minimize gesture
-
+* As mentioned above, **Pich gesture** and **Application gesture** currently only work if the mouse pointer is pointed at the desktop or top panel.
 
 ## Customization
 * To switch to windows from *all* workspaces using 3-fingers swipes, run 
