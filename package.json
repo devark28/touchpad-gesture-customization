@@ -1,0 +1,40 @@
+{
+    "name": "touchpad-gesture-customization",
+    "version": "1.0.0",
+    "description": "Enable touchpad gestures customization in GNOME using Wayland",
+    "type": "module",
+    "private": true,
+    "main": "extension.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/HieuTNg/touchpad-gesture-customization"
+    },
+    "author": "Hieu Trung Nguyen <hieutnguyen@coooolapps.com> (https://coooolapps.com/)",
+    "license": "LGPL-3.0-or-later",
+    "bugs": {
+        "url": "https://github.com/HieuTNg/touchpad-gesture-customization/issues"
+    },
+    "homepage": "https://github.com/HieuTNg/touchpad-gesture-customization",
+    "sideEffects": false,
+    "scripts": {
+        "clean-dev": "rm -rf build node_modules",
+        "lint:package": "eslint build --fix",
+        "clean": "rm -rf build && mkdir build",
+        "lint:extension": "eslint extension --fix",
+        "transpile": "npm run lint:extension && tsc",
+        "build": "npm run clean && npm run transpile && npm run lint:package",
+        "pack": "npm run build && make pack",
+        "update": "npm run pack && make update"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.17.0",
+        "eslint": "^9.17.0",
+        "eslint-plugin-jsdoc": "^50.6.1",
+        "typescript": "^5.7.2",
+        "typescript-eslint": "^8.19.0"
+    },
+    "dependencies": {
+        "@girs/gjs": "^4.0.0-beta.19",
+        "@girs/gnome-shell": "^47.0.0"
+    }
+}
