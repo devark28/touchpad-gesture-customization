@@ -67,11 +67,5 @@ gnome-extensions enable touchpad-gesture-customization@coooolapps.com
 gsettings set org.gnome.shell.window-switcher current-workspace-only false
 ```
 
-* Add delay to alt-tab gesture, to ensure second windows gets selected when a fast swipe is done
-* Change sensitivity of swipe (touchpad swipe speed)
-* Option to follow natural scrolling (seperate from option in GNOME settings)
-* Revert to 3-finger swipes to switch workspace on desktop (4-fingers to switch windows)
-* Revert to 3-finger swipes for overview navigation (4-fingers to maximize/unmaximize/tile)
-
 # Acknowledgement
 Massive thanks to the original author and everyone who has contributed to the original project to bring us this wonderful GNOME extension.
