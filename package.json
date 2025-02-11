@@ -19,17 +19,21 @@
     "scripts": {
         "clean-dev": "rm -rf build node_modules",
         "lint:package": "eslint build --fix",
+        "format:build": "npx prettier build --write",
         "clean": "rm -rf build && mkdir build",
         "lint:extension": "eslint extension --fix",
-        "transpile": "npm run lint:extension && tsc",
-        "build": "npm run clean && npm run transpile && npm run lint:package",
+        "format:extension": "npx prettier extension --write",
+        "transpile": "npm run lint:extension && npm run format:extension && tsc",
+        "build": "npm run clean && npm run transpile && npm run lint:package && npm run format:build",
         "pack": "npm run build && make pack",
         "update": "npm run pack && make update"
     },
     "devDependencies": {
         "@eslint/js": "^9.17.0",
+        "@stylistic/eslint-plugin": "^3.1.0",
         "eslint": "^9.17.0",
         "eslint-plugin-jsdoc": "^50.6.1",
+        "prettier": "3.5.0",
         "typescript": "^5.7.2",
         "typescript-eslint": "^8.19.0"
     },

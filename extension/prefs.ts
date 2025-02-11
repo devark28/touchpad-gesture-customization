@@ -1,8 +1,6 @@
 import Adw from 'gi://Adw';
-
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
-
-import {buildPrefsWidget} from './common/pref.js';
+import {buildPrefsWidget} from './prefs/pref.js';
 
 export default class TouchpadGestureCustomizationPreferences extends ExtensionPreferences {
     fillPreferencesWindow(prefsWindow: Adw.PreferencesWindow) {

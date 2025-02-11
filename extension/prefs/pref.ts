@@ -3,13 +3,19 @@ import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import Gdk from 'gi://Gdk';
 import GObject from 'gi://GObject';
-
-import {AllUIObjectKeys, BooleanSettingsKeys, DoubleSettingsKeys, EnumSettingsKeys, GioSettings, IntegerSettingsKeys} from './settings.js';
+import {
+    AllUIObjectKeys,
+    BooleanSettingsKeys,
+    DoubleSettingsKeys,
+    EnumSettingsKeys,
+    GioSettings,
+    IntegerSettingsKeys,
+} from '../common/settings.js';
 import {getAppKeybindingGesturePrefsPage} from './appGestures.js';
 
 type GtkBuilder = Omit<Gtk.Builder, 'get_object'> & {
-	get_object<T = GObject.Object>(name: AllUIObjectKeys): T;
-}
+    get_object<T = GObject.Object>(name: AllUIObjectKeys): T;
+};
 
 /**
  * Bind value of setting to {@link Gtk.SpinButton}
@@ -17,7 +23,11 @@ type GtkBuilder = Omit<Gtk.Builder, 'get_object'> & {
  * @param settings
  * @param builder
  */
-function bind_int_value(key: IntegerSettingsKeys, settings: GioSettings, builder: GtkBuilder) {
+function bind_int_value(
+    key: IntegerSettingsKeys,
+    settings: GioSettings,
+    builder: GtkBuilder
+) {
     const button = builder.get_object<Gtk.SpinButton>(key);
     settings.bind(key, button, 'value', Gio.SettingsBindFlags.DEFAULT);
 }
@@ -29,9 +39,19 @@ function bind_int_value(key: IntegerSettingsKeys, settings: GioSettings, builder
  * @param builder
  * @param flags flag used when binding setting's key to switch's {@link Gtk.Switch.active} status
  */
-function bind_boolean_value(key: BooleanSettingsKeys, settings: GioSettings, builder: GtkBuilder, flags?: Gio.SettingsBindFlags) {
+function bind_boolean_value(
+    key: BooleanSettingsKeys,
+    settings: GioSettings,
+    builder: GtkBuilder,
+    flags?: Gio.SettingsBindFlags
+) {
     const button = builder.get_object<Gtk.Switch>(key);
-    settings.bind(key, button, 'active', flags ?? Gio.SettingsBindFlags.DEFAULT);
+    settings.bind(
+        key,
+        button,
+        'active',
+        flags ?? Gio.SettingsBindFlags.DEFAULT
+    );
 }
 
 /**
@@ -40,7 +60,11 @@ function bind_boolean_value(key: BooleanSettingsKeys, settings: GioSettings, bui
  * @param settings
  * @param builder
  */
-function bind_combo_box(key: EnumSettingsKeys, settings: GioSettings, builder: GtkBuilder) {
+function bind_combo_box(
+    key: EnumSettingsKeys,
+    settings: GioSettings,
+    builder: GtkBuilder
+) {
     const comboRow = builder.get_object<Adw.ComboRow>(key);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const enum_key = key as any;
@@ -57,13 +81,20 @@ function bind_combo_box(key: EnumSettingsKeys, settings: GioSettings, builder: G
  * @param settings
  * @param builder
  */
-function display_in_log_scale(key: DoubleSettingsKeys, label_key: AllUIObjectKeys, settings: GioSettings, builder: GtkBuilder) {
+function display_in_log_scale(
+    key: DoubleSettingsKeys,
+    label_key: AllUIObjectKeys,
+    settings: GioSettings,
+    builder: GtkBuilder
+) {
     const scale = builder.get_object<Gtk.Scale>(key);
     const label = builder.get_object<Gtk.Label>(label_key);
 
     // display value in log scale
     scale.connect('value-changed', () => {
-        const labelValue = Math.exp(scale.adjustment.value / Math.LOG2E).toFixed(2);
+        const labelValue = Math.exp(
+            scale.adjustment.value / Math.LOG2E
+        ).toFixed(2);
         label.set_text(labelValue);
         settings.set_double(key, parseFloat(labelValue));
     });
@@ -78,16 +109,41 @@ function display_in_log_scale(key: DoubleSettingsKeys, label_key: AllUIObjectKey
  * @param settings setting object of extension
  */
 function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
-    display_in_log_scale('touchpad-speed-scale', 'touchpad-speed-scale_display-value', settings, builder);
-    display_in_log_scale('touchpad-pinch-speed', 'touchpad-pinch-speed_display-value', settings, builder);
+    display_in_log_scale(
+        'touchpad-speed-scale',
+        'touchpad-speed-scale_display-value',
+        settings,
+        builder
+    );
+    display_in_log_scale(
+        'touchpad-pinch-speed',
+        'touchpad-pinch-speed_display-value',
+        settings,
+        builder
+    );
 
     bind_int_value('alttab-delay', settings, builder);
     bind_int_value('hold-swipe-delay-duration', settings, builder);
 
-    bind_boolean_value('default-session-workspace', settings, builder, Gio.SettingsBindFlags.INVERT_BOOLEAN);
-    bind_boolean_value('default-overview', settings, builder, Gio.SettingsBindFlags.INVERT_BOOLEAN);
+    bind_boolean_value(
+        'default-session-workspace',
+        settings,
+        builder,
+        Gio.SettingsBindFlags.INVERT_BOOLEAN
+    );
+    bind_boolean_value(
+        'default-overview',
+        settings,
+        builder,
+        Gio.SettingsBindFlags.INVERT_BOOLEAN
+    );
     bind_boolean_value('follow-natural-scroll', settings, builder);
-    bind_boolean_value('default-overview-gesture-direction', settings, builder, Gio.SettingsBindFlags.INVERT_BOOLEAN);
+    bind_boolean_value(
+        'default-overview-gesture-direction',
+        settings,
+        builder,
+        Gio.SettingsBindFlags.INVERT_BOOLEAN
+    );
 
     bind_boolean_value('enable-alttab-gesture', settings, builder);
     bind_boolean_value('enable-window-manipulation-gesture', settings, builder);
@@ -105,8 +161,11 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
  */
 function loadCssProvider(styleManager: Adw.StyleManager, uiDir: string) {
     const cssProvider = new Gtk.CssProvider();
-    cssProvider.load_from_path(`${uiDir}/${styleManager.dark ? 'style-dark' : 'style'}.css`);
+    cssProvider.load_from_path(
+        `${uiDir}/${styleManager.dark ? 'style-dark' : 'style'}.css`
+    );
     const gtkDefaultDisplay = Gdk.Display.get_default();
+
     if (gtkDefaultDisplay) {
         Gtk.StyleContext.add_provider_for_display(
             gtkDefaultDisplay,
@@ -130,7 +189,9 @@ export function buildPrefsWidget(
     prefsWindow.set_search_enabled(true);
 
     const styleManager = Adw.StyleManager.get_default();
-    styleManager.connect('notify::dark', () => loadCssProvider(styleManager, uiDir));
+    styleManager.connect('notify::dark', () =>
+        loadCssProvider(styleManager, uiDir)
+    );
     loadCssProvider(styleManager, uiDir);
 
     const builder = new Gtk.Builder() as GtkBuilder;
@@ -144,9 +205,14 @@ export function buildPrefsWidget(
     prefsWindow.add(builder.get_object<Adw.PreferencesPage>('gestures_page'));
 
     // application specific gestures
-    const app_gesture_page = getAppKeybindingGesturePrefsPage(prefsWindow, settings);
+    const app_gesture_page = getAppKeybindingGesturePrefsPage(
+        prefsWindow,
+        settings
+    );
     prefsWindow.add(app_gesture_page);
 
     // customize page
-    prefsWindow.add(builder.get_object<Adw.PreferencesPage>('customizations_page'));
+    prefsWindow.add(
+        builder.get_object<Adw.PreferencesPage>('customizations_page')
+    );
 }
