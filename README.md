@@ -4,10 +4,10 @@ This extension modifies and extends existing touchpad gestures on GNOME using Wa
 **Note**: I have removed the support for X11 since I only use Wayland, but this can be added again in the future if needed and if someone is willing to support this.
 
 ## Installation
-<!-- ### From GNOME Extensions Website
-<a href="">
+### From GNOME Extensions Website
+<a href="https://extensions.gnome.org/extension/7850/touchpad-gesture-customization/">
 <img src="https://github.com/andyholmes/gnome-shell-extensions-badge/raw/master/get-it-on-ego.svg" alt="Get it on EGO" width="200" />
-</a> -->
+</a>
 
 ### Manually
 1. Install extension
