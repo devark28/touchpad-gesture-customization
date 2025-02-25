@@ -31,7 +31,8 @@ export type BooleanSettingsKeys =
     | 'enable-alttab-gesture'
     | 'enable-forward-back-gesture'
     | 'enable-window-manipulation-gesture'
-    | 'default-overview-gesture-direction';
+    | 'default-overview-gesture-direction'
+    | 'enable-volume-control-gesture';
 
 export type IntegerSettingsKeys = 'alttab-delay' | 'hold-swipe-delay-duration';
 

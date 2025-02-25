@@ -1,6 +1,5 @@
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
-import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import {actionMode} from 'resource:///org/gnome/shell/ui/main.js';
 import {

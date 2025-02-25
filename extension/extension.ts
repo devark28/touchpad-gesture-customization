@@ -17,6 +17,7 @@ import * as VKeyboard from './src/utils/keyboard.js';
 import {SnapWindowExtension} from './src/snapWidnow.js';
 import {ShowDesktopExtension} from './src/pinchGestures/showDesktop.js';
 import {CloseWindowExtension} from './src/pinchGestures/closeWindow.js';
+import {VolumeControlGestureExtension} from './src/volumeControl.js';
 
 export default class TouchpadGestureCustomization extends Extension {
     private _extensions: ISubExtension[];
@@ -98,6 +99,14 @@ export default class TouchpadGestureCustomization extends Extension {
                     this.metadata.dir.get_uri()
                 )
             );
+        }
+
+        // Control system volume with 3 finger gesture
+        if (this.settings.get_boolean('enable-volume-control-gesture')) {
+            if (
+                !this.settings.get_boolean('enable-window-manipulation-gesture')
+            )
+                this._extensions.push(new VolumeControlGestureExtension());
         }
 
         if (this.settings.get_boolean('enable-window-manipulation-gesture'))

@@ -91,6 +91,21 @@
                         </child>
                     </object>
                 </child>
+
+                <!-- Volume Control -->
+                <child>
+                    <object class="AdwActionRow">
+                        <property name="title" translatable="yes">Volume Control</property>
+                        <property name="subtitle">[Experimental] Control system volume using 3-finger vertical swipe. Only work if 'Window Manipulation' is disabled.</property>
+                        <property name="sensitive" bind-source="enable-window-manipulation-gesture" bind-property="active" bind-flags="invert-boolean">False</property>
+                        <child>
+                            <object class="GtkSwitch" id="enable-volume-control-gesture">
+                                <property name="valign">center</property>
+                                <property name="active">False</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
             </object>
         </child>
 

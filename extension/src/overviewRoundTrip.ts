@@ -33,7 +33,7 @@ export class OverviewRoundTripGestureExtension implements ISubExtension {
         this._overviewControls = Main.overview._overview._controls;
         this._stateAdjustment = this._overviewControls._stateAdjustment;
         this._oldGetStateTransitionParams =
-            this._overviewControls._stateAdjustment.getStateTransitionParams;
+            this._stateAdjustment.getStateTransitionParams;
         this._progress = 0;
         this._connectors = [];
     }
@@ -72,7 +72,6 @@ export class OverviewRoundTripGestureExtension implements ISubExtension {
             ExtSettings.DEFAULT_OVERVIEW_GESTURE_DIRECTION
         );
 
-        this._swipeTracker.orientation = Clutter.Orientation.VERTICAL;
         this._connectors.push(
             this._swipeTracker.connect('begin', this._gestureBegin.bind(this))
         );

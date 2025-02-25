@@ -37,6 +37,10 @@
       <default>false</default>
       <description>If true, when swipe down on non-maximized window minimizes it</description>
     </key>
+    <key name='enable-volume-control-gesture' type='b'>
+      <default>false</default>
+      <description>If true, 3-fingers vertical swipe control system volume</description>
+    </key>
     <key name='follow-natural-scroll' type='b'>
       <default>true</default>
       <description>Whether to follow natural scroll for swipe</description>
@@ -57,6 +61,7 @@
       <default>true</default>
       <description>Enable Window manipulation gesture</description>
     </key>
+
     <key name="pinch-3-finger-gesture" enum="org.gnome.shell.extensions.touchpad-gesture-customization.pinch-gestures">
       <default>'NONE'</default>
       <description>Gesture for 3 finger pinch</description>
