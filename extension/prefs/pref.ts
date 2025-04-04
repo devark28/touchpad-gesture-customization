@@ -13,7 +13,7 @@ import {
 } from '../common/settings.js';
 import {getAppKeybindingGesturePrefsPage} from './appGestures.js';
 
-type GtkBuilder = Omit<Gtk.Builder, 'get_object'> & {
+export type GtkBuilder = Omit<Gtk.Builder, 'get_object'> & {
     get_object<T = GObject.Object>(name: AllUIObjectKeys): T;
 };
 
@@ -208,7 +208,8 @@ export function buildPrefsWidget(
     // application specific gestures
     const app_gesture_page = getAppKeybindingGesturePrefsPage(
         prefsWindow,
-        settings
+        settings,
+        builder
     );
     prefsWindow.add(app_gesture_page);
 

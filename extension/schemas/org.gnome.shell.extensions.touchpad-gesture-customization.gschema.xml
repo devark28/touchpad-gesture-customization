@@ -57,6 +57,10 @@
       <default>false</default>
       <description>Enable forward/back keybinding gesture</description>
     </key>
+    <key name='enable-vertical-app-gesture' type='b'>
+      <default>false</default>
+      <description>Enable vertical swipe for app gesture</description>
+    </key>
     <key name='enable-window-manipulation-gesture' type='b'>
       <default>true</default>
       <description>Enable Window manipulation gesture</description>

@@ -5,6 +5,7 @@ import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 import {ForwardBackKeyBinds, GioSettings} from '../common/settings.js';
 import {printStack} from '../common/utils/logging.js';
+import {type GtkBuilder} from './pref.js';
 
 /**
  * return icon image for give app
@@ -452,7 +453,8 @@ const AppKeybindingGesturePrefsGroup = GObject.registerClass(
  */
 export function getAppKeybindingGesturePrefsPage(
     prefsWindow: Adw.PreferencesWindow,
-    settings: GioSettings
+    settings: GioSettings,
+    builder: GtkBuilder
 ) {
     const page = new Adw.PreferencesPage({
         title: 'App Gestures',
@@ -460,5 +462,37 @@ export function getAppKeybindingGesturePrefsPage(
     });
 
     page.add(new AppKeybindingGesturePrefsGroup(prefsWindow, settings));
+
+    // enable vertical swipe option for app gestures
+    const enableVerticalSwipeGroup = new Adw.PreferencesGroup({
+        title: 'Enable vertical swipe for application specific gestures',
+        description:
+            "Use vertical swipe instead of horizontal swipe for application specific gestures. This will disable 'Window Manipulation' and 'Volume Control'",
+    });
+    const toggleSwitch = new Gtk.Switch({valign: Gtk.Align.START});
+
+    // toggleSwitch.sensitive = true;
+    toggleSwitch.bind_property(
+        'active',
+        builder.get_object<Gtk.Switch>('enable-window-manipulation-gesture'),
+        'active',
+        GObject.BindingFlags.INVERT_BOOLEAN
+    );
+    toggleSwitch.bind_property(
+        'active',
+        builder.get_object<Gtk.Switch>('enable-volume-control-gesture'),
+        'active',
+        GObject.BindingFlags.INVERT_BOOLEAN
+    );
+    enableVerticalSwipeGroup.set_header_suffix(toggleSwitch);
+    settings.bind(
+        'enable-vertical-app-gesture',
+        toggleSwitch,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    page.add(enableVerticalSwipeGroup);
+
     return page;
 }

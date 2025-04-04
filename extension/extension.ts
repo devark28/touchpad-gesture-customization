@@ -93,23 +93,31 @@ export default class TouchpadGestureCustomization extends Extension {
             const appForwardBackKeyBinds: AppForwardBackKeyBinds = this.settings
                 .get_value('forward-back-application-keyboard-shortcuts')
                 .deepUnpack();
+
             this._extensions.push(
                 new ForwardBackGestureExtension(
                     appForwardBackKeyBinds,
-                    this.metadata.dir.get_uri()
+                    this.metadata.dir.get_uri(),
+                    this.settings.get_boolean('enable-vertical-app-gesture')
                 )
             );
         }
 
         // Control system volume with 3 finger gesture
-        if (this.settings.get_boolean('enable-volume-control-gesture')) {
+        if (
+            !this.settings.get_boolean('enable-vertical-app-gesture') &&
+            this.settings.get_boolean('enable-volume-control-gesture')
+        ) {
             if (
                 !this.settings.get_boolean('enable-window-manipulation-gesture')
             )
                 this._extensions.push(new VolumeControlGestureExtension());
         }
 
-        if (this.settings.get_boolean('enable-window-manipulation-gesture'))
+        if (
+            !this.settings.get_boolean('enable-vertical-app-gesture') &&
+            this.settings.get_boolean('enable-window-manipulation-gesture')
+        )
             this._extensions.push(new SnapWindowExtension());
 
         // pinch to show desktop

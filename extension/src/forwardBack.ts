@@ -40,7 +40,8 @@ export class ForwardBackGestureExtension implements ISubExtension {
 
     constructor(
         appForwardBackKeyBinds: AppForwardBackKeyBinds,
-        extensionPath: string
+        extensionPath: string,
+        enableVerticalSwipe: boolean
     ) {
         this._appForwardBackKeyBinds = appForwardBackKeyBinds;
         this._windowTracker = Shell.WindowTracker.get_default();
@@ -50,7 +51,9 @@ export class ForwardBackGestureExtension implements ISubExtension {
             global.stage,
             ExtSettings.DEFAULT_SESSION_WORKSPACE_GESTURE ? [4] : [3],
             Shell.ActionMode.NORMAL,
-            Clutter.Orientation.HORIZONTAL,
+            enableVerticalSwipe
+                ? Clutter.Orientation.VERTICAL
+                : Clutter.Orientation.HORIZONTAL,
             false,
             1,
             {allowTouch: false}
