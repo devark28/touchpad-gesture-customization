@@ -17,7 +17,7 @@ cd touchpad-gesture-customization
 npm install
 npm run update
 ```
-2. Log out and log
+2. Log out and log in
 3. Enable extension via extensions app or via command line
 ```
 gnome-extensions enable touchpad-gesture-customization@coooolapps.com
