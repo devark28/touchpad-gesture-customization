@@ -298,10 +298,10 @@ export class SnapWindowExtension implements ISubExtension {
     private _allowChangeDirection = false;
     private _uiGroupAddedActorId: number;
 
-    constructor() {
+    constructor(nfingerss: number[]) {
         this._swipeTracker = createSwipeTracker(
             global.stage,
-            ExtSettings.DEFAULT_OVERVIEW_GESTURE ? [4] : [3],
+            nfingerss,
             Shell.ActionMode.NORMAL,
             Clutter.Orientation.VERTICAL,
             true,

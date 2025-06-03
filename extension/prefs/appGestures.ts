@@ -472,18 +472,6 @@ export function getAppKeybindingGesturePrefsPage(
     const toggleSwitch = new Gtk.Switch({valign: Gtk.Align.START});
 
     // toggleSwitch.sensitive = true;
-    toggleSwitch.bind_property(
-        'active',
-        builder.get_object<Gtk.Switch>('enable-window-manipulation-gesture'),
-        'active',
-        GObject.BindingFlags.INVERT_BOOLEAN
-    );
-    toggleSwitch.bind_property(
-        'active',
-        builder.get_object<Gtk.Switch>('enable-volume-control-gesture'),
-        'active',
-        GObject.BindingFlags.INVERT_BOOLEAN
-    );
     enableVerticalSwipeGroup.set_header_suffix(toggleSwitch);
     settings.bind(
         'enable-vertical-app-gesture',

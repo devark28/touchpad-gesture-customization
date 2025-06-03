@@ -8,6 +8,15 @@ export enum PinchGestureType {
     CLOSE_DOCUMENT = 3,
 }
 
+export enum SwipeGestureType {
+    NONE = 0,
+    OVERVIEW_NAVIGATION = 1,
+    WORKSPACE_SWITCHING = 2,
+    WINDOW_SWITCHING = 3,
+    VOLUME_CONTROL = 4,
+    WINDOW_MANIPULATION = 5,
+}
+
 export enum OverviewNavigationState {
     CYCLIC = 0,
     GNOME = 1,
@@ -24,13 +33,9 @@ export enum ForwardBackKeyBinds {
 }
 
 export type BooleanSettingsKeys =
-    | 'default-session-workspace'
-    | 'default-overview'
     | 'allow-minimize-window'
     | 'follow-natural-scroll'
-    | 'enable-alttab-gesture'
     | 'enable-forward-back-gesture'
-    | 'enable-window-manipulation-gesture'
     | 'default-overview-gesture-direction'
     | 'enable-volume-control-gesture';
 
@@ -41,6 +46,10 @@ export type DoubleSettingsKeys =
     | 'touchpad-pinch-speed';
 
 export type EnumSettingsKeys =
+    | 'vertical-swipe-3-fingers-gesture'
+    | 'horizontal-swipe-3-fingers-gesture'
+    | 'vertical-swipe-4-fingers-gesture'
+    | 'horizontal-swipe-4-fingers-gesture'
     | 'pinch-3-finger-gesture'
     | 'pinch-4-finger-gesture'
     | 'overview-navigation-states';
@@ -68,9 +77,16 @@ type Enum_Functions<K extends EnumSettingsKeys, T> = {
 };
 
 type SettingsEnumFunctions = Enum_Functions<
-    'pinch-3-finger-gesture' | 'pinch-4-finger-gesture',
-    PinchGestureType
+    | 'vertical-swipe-3-fingers-gesture'
+    | 'horizontal-swipe-3-fingers-gesture'
+    | 'vertical-swipe-4-fingers-gesture'
+    | 'horizontal-swipe-4-fingers-gesture',
+    SwipeGestureType
 > &
+    Enum_Functions<
+        'pinch-3-finger-gesture' | 'pinch-4-finger-gesture',
+        PinchGestureType
+    > &
     Enum_Functions<'overview-navigation-states', OverviewNavigationState>;
 
 type Misc_Functions<K extends MiscSettingsKeys, T extends string> = {

@@ -42,7 +42,7 @@ export default tseslint.config(
             'padded-blocks': [
                 'error',
                 {"classes": "always"}
-            ]
+            ],
         }
     },
     {

@@ -11,6 +11,21 @@
     <value value='1' nick='GNOME' />
     <value value='2' nick='WINDOW_PICKER_ONLY' />
   </enum>
+  <enum id='org.gnome.shell.extensions.touchpad-gesture-customization.vertical-swipe-gestures'>
+    <value value='0' nick='NONE' />
+    <value value='1' nick='OVERVIEW_NAVIGATION' />
+    <value value='2' nick='WORKSPACE_SWITCHING' />
+    <value value='3' nick='WINDOW_SWITCHING' />
+    <value value='4' nick='VOLUME_CONTROL' />
+    <value value='5' nick='WINDOW_MANIPULATION' />
+  </enum>
+  <enum id='org.gnome.shell.extensions.touchpad-gesture-customization.horizontal-swipe-gestures'>
+    <value value='0' nick='NONE' />
+    <value value='1' nick='OVERVIEW_NAVIGATION' />
+    <value value='2' nick='WORKSPACE_SWITCHING' />
+    <value value='3' nick='WINDOW_SWITCHING' />
+    <value value='4' nick='VOLUME_CONTROL' />
+  </enum>
   <schema id="org.gnome.shell.extensions.touchpad-gesture-customization" path="/org/gnome/shell/extensions/touchpad-gesture-customization/">
     <!-- See also: https://docs.gtk.org/glib/gvariant-format-strings.html -->
     <key name="touchpad-speed-scale" type="d">
@@ -24,14 +39,6 @@
     </key>
     <key name="hold-swipe-delay-duration" type="i">
       <default>10</default>
-    </key>
-    <key name='default-session-workspace' type='b'>
-      <default>false</default>
-      <description>If true, use 3-fingers to switch workspace, 4 for windows</description>
-    </key>
-    <key name='default-overview' type='b'>
-      <default>false</default>
-      <description>If true, use 3-fingers for overview gesture, 4 for snapping/tiling</description>
     </key>
     <key name='allow-minimize-window' type='b'>
       <default>false</default>
@@ -49,10 +56,6 @@
       <default>true</default>
       <description>Default direction for overview navigation</description>
     </key>
-    <key name='enable-alttab-gesture' type='b'>
-      <default>true</default>
-      <description>Enable alttab gesture</description>
-    </key>
     <key name='enable-forward-back-gesture' type='b'>
       <default>false</default>
       <description>Enable forward/back keybinding gesture</description>
@@ -61,11 +64,6 @@
       <default>false</default>
       <description>Enable vertical swipe for app gesture</description>
     </key>
-    <key name='enable-window-manipulation-gesture' type='b'>
-      <default>true</default>
-      <description>Enable Window manipulation gesture</description>
-    </key>
-
     <key name="pinch-3-finger-gesture" enum="org.gnome.shell.extensions.touchpad-gesture-customization.pinch-gestures">
       <default>'NONE'</default>
       <description>Gesture for 3 finger pinch</description>
@@ -73,6 +71,22 @@
     <key name="pinch-4-finger-gesture" enum="org.gnome.shell.extensions.touchpad-gesture-customization.pinch-gestures">
       <default>'SHOW_DESKTOP'</default>
       <description>Gesture for 4 finger pinch</description>
+    </key>
+    <key name="vertical-swipe-3-fingers-gesture" enum="org.gnome.shell.extensions.touchpad-gesture-customization.vertical-swipe-gestures">
+      <default>'NONE'</default>
+      <description>Gesture action for 3-fingers vertical swipe</description>
+    </key>
+    <key name="horizontal-swipe-3-fingers-gesture" enum="org.gnome.shell.extensions.touchpad-gesture-customization.horizontal-swipe-gestures">
+      <default>'NONE'</default>
+      <description>Gesture action for 3-fingers horizontal swipe</description>
+    </key>
+    <key name="vertical-swipe-4-fingers-gesture" enum="org.gnome.shell.extensions.touchpad-gesture-customization.vertical-swipe-gestures">
+      <default>'NONE'</default>
+      <description>Gesture action for 4-fingers vertical swipe</description>
+    </key>
+    <key name="horizontal-swipe-4-fingers-gesture" enum="org.gnome.shell.extensions.touchpad-gesture-customization.horizontal-swipe-gestures">
+      <default>'NONE'</default>
+      <description>Gesture action for 4-fingers horizontal swipe</description>
     </key>
     <key name="overview-navigation-states" enum="org.gnome.shell.extensions.touchpad-gesture-customization.overview-navigation-states">
       <default>'WINDOW_PICKER_ONLY'</default>

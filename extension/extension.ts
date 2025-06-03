@@ -4,7 +4,11 @@ import {
     Extension,
     ExtensionMetadata,
 } from 'resource:///org/gnome/shell/extensions/extension.js';
-import {AllSettingsKeys, PinchGestureType} from './common/settings.js';
+import {
+    AllSettingsKeys,
+    PinchGestureType,
+    SwipeGestureType,
+} from './common/settings.js';
 import * as Constants from './constants.js';
 import {OverviewRoundTripGestureExtension} from './src/overviewRoundTrip.js';
 import {GestureExtension} from './src/gestures.js';
@@ -79,49 +83,117 @@ export default class TouchpadGestureCustomization extends Extension {
         this._extensions = [];
         if (this.settings === undefined) return;
 
-        this._extensions.push(
-            new OverviewRoundTripGestureExtension(
-                this.settings.get_enum('overview-navigation-states')
-            ),
-            new GestureExtension()
+        const verticalSwipeToFingersMap =
+            this._getVerticalSwipeGestureTypeAndFingers();
+        const horizontalSwipeToFingersMap =
+            this._getHorizontalSwipeGestureTypeAndFingers();
+
+        /**
+         * Overview navigation
+         */
+
+        const verticalOverviewNavigationFingers = verticalSwipeToFingersMap.get(
+            SwipeGestureType.OVERVIEW_NAVIGATION
         );
 
-        if (this.settings.get_boolean('enable-alttab-gesture'))
-            this._extensions.push(new AltTabGestureExtension());
+        const horizontalOverviewNavigationFingers =
+            horizontalSwipeToFingersMap.get(
+                SwipeGestureType.OVERVIEW_NAVIGATION
+            );
 
-        if (this.settings.get_boolean('enable-forward-back-gesture')) {
-            const appForwardBackKeyBinds: AppForwardBackKeyBinds = this.settings
-                .get_value('forward-back-application-keyboard-shortcuts')
-                .deepUnpack();
+        const overviewRoundTripGesterExtension =
+            new OverviewRoundTripGestureExtension(
+                this.settings.get_enum('overview-navigation-states')
+            );
 
-            this._extensions.push(
-                new ForwardBackGestureExtension(
-                    appForwardBackKeyBinds,
-                    this.metadata.dir.get_uri(),
-                    this.settings.get_boolean('enable-vertical-app-gesture')
-                )
+        // By default, disable overview navigation when user doesn't assign any gestures
+        overviewRoundTripGesterExtension.setVerticalSwipeTracker([]);
+
+        // Enable vertical swipe for overview navigation
+        if (verticalOverviewNavigationFingers?.length) {
+            overviewRoundTripGesterExtension.setVerticalSwipeTracker(
+                verticalOverviewNavigationFingers
             );
         }
 
-        // Control system volume with 3 finger gesture
-        if (
-            !this.settings.get_boolean('enable-vertical-app-gesture') &&
-            this.settings.get_boolean('enable-volume-control-gesture')
-        ) {
-            if (
-                !this.settings.get_boolean('enable-window-manipulation-gesture')
-            )
-                this._extensions.push(new VolumeControlGestureExtension());
+        // Enable horizontal swipe for overview navigation
+        if (horizontalOverviewNavigationFingers?.length) {
+            overviewRoundTripGesterExtension?.setHorizontalSwipeTracker(
+                horizontalOverviewNavigationFingers
+            );
         }
 
-        if (
-            !this.settings.get_boolean('enable-vertical-app-gesture') &&
-            this.settings.get_boolean('enable-window-manipulation-gesture')
-        )
-            this._extensions.push(new SnapWindowExtension());
+        this._extensions.push(overviewRoundTripGesterExtension);
 
-        // pinch to show desktop
+        /**
+         * Workspace navigation (not working)
+         */
+
+        // TODO: match workspace navigation control in overview mode and normal mode
+
+        const verticalWorkspaceNavigationFingers =
+            verticalSwipeToFingersMap.get(SwipeGestureType.WORKSPACE_SWITCHING);
+        const horizontalWorkspaceNavigationFingers =
+            horizontalSwipeToFingersMap.get(
+                SwipeGestureType.WORKSPACE_SWITCHING
+            );
+
+        const gestureExtension = new GestureExtension();
+
+        // Disable default workspace navigation using horizontal swipe
+        gestureExtension.setHorizontalWorkspaceAnimationModifier([]);
+
+        // Enable vertical swipe for workspace navigation
+        if (verticalWorkspaceNavigationFingers?.length)
+            gestureExtension.setVerticalWorkspceAnimationModifier(
+                verticalWorkspaceNavigationFingers
+            );
+
+        // Enable horizontal swipe for workspace navigation
+        if (horizontalWorkspaceNavigationFingers?.length)
+            gestureExtension.setHorizontalWorkspaceAnimationModifier(
+                horizontalWorkspaceNavigationFingers
+            );
+
+        this._extensions.push(gestureExtension);
+
+        /**
+         * Window switching (Alt + tab)
+         */
+
+        const verticalWindowSwitchingFingers = verticalSwipeToFingersMap.get(
+            SwipeGestureType.WINDOW_SWITCHING
+        );
+        const horizontalWindowSwitchingFingers =
+            horizontalSwipeToFingersMap.get(SwipeGestureType.WINDOW_SWITCHING);
+
+        // TODO: update class name to WindowSwitchingGestureExtension
+        const windowSwitchingGestureExtension = new AltTabGestureExtension();
+
+        // Disable default window switching using horizontal swipe
+        windowSwitchingGestureExtension.setHorizontalTouchpadSwipeTracker([]);
+
+        // Enable vertical swipe for window switching
+        if (verticalWindowSwitchingFingers?.length)
+            windowSwitchingGestureExtension.setVerticalTouchpadSwipeTracker(
+                verticalWindowSwitchingFingers
+            );
+
+        // Enable horizontal swipe for window switching
+        if (horizontalWindowSwitchingFingers?.length)
+            windowSwitchingGestureExtension.setHorizontalTouchpadSwipeTracker(
+                horizontalWindowSwitchingFingers
+            );
+
+        this._extensions.push(windowSwitchingGestureExtension);
+
+        /**
+         * Pinch Gestures
+         */
+
         const pinchToFingersMap = this._getPinchGestureTypeAndFingers();
+
+        // pinch to show desktop (not working)
         const showDesktopFingers = pinchToFingersMap.get(
             PinchGestureType.SHOW_DESKTOP
         );
@@ -152,7 +224,111 @@ export default class TouchpadGestureCustomization extends Extension {
                 )
             );
 
+        /**
+         * Other Gestures
+         */
+        // // Control system volume with 3 finger gesture
+        // if (
+        //     !this.settings.get_boolean('enable-vertical-app-gesture') &&
+        //     this.settings.get_boolean('enable-volume-control-gesture')
+        // ) {
+        //     if (
+        //         !this.settings.get_boolean('enable-window-manipulation-gesture')
+        //     )
+        //         this._extensions.push(new VolumeControlGestureExtension());
+        // }
+
+        // TODO: allow user to choose whether to use 3 or 4 fingers swipe to control
+        // window tiling (given the feature need vertical swipe to activate)
+        // if user choose to use 3 fingers, 3 fingers vertical swipe should be set to none
+
+        // TODO: consider having an option for 'hold and swipe gestures' that can either
+        // be set to window tiling or app gesture (need to fix how to activate window tiling with
+        // hold and swipe without being blocked by overview navigation)
+
+        /**
+         * Window Tiling/snapping & minimisation
+         */
+
+        // TODO: when both vertical and horizontal swipe are not set to window manipulation
+        // the switch for minimise window should be disbaled
+        const verticalWindowManipulationFingers = verticalSwipeToFingersMap.get(
+            SwipeGestureType.WINDOW_MANIPULATION
+        );
+
+        if (verticalWindowManipulationFingers?.length)
+            this._extensions.push(
+                new SnapWindowExtension(verticalWindowManipulationFingers)
+            );
+
+        /**
+         * App Gestures
+         */
+        if (this.settings.get_boolean('enable-forward-back-gesture')) {
+            const appForwardBackKeyBinds: AppForwardBackKeyBinds = this.settings
+                .get_value('forward-back-application-keyboard-shortcuts')
+                .deepUnpack();
+
+            this._extensions.push(
+                new ForwardBackGestureExtension(
+                    appForwardBackKeyBinds,
+                    this.metadata.dir.get_uri(),
+                    this.settings.get_boolean('enable-vertical-app-gesture')
+                )
+            );
+        }
+
         this._extensions.forEach(extension => extension.apply?.());
+    }
+
+    private _getVerticalSwipeGestureTypeAndFingers(): Map<
+        SwipeGestureType,
+        number[]
+    > {
+        if (!this.settings) return new Map();
+
+        const verticalSwipe3FingerGesture = this.settings.get_enum(
+            'vertical-swipe-3-fingers-gesture'
+        );
+        const verticalSwipe4FingerGesture = this.settings.get_enum(
+            'vertical-swipe-4-fingers-gesture'
+        );
+
+        const swipeGestureToFingersMap = new Map<SwipeGestureType, number[]>();
+
+        if (verticalSwipe3FingerGesture === verticalSwipe4FingerGesture)
+            swipeGestureToFingersMap.set(verticalSwipe3FingerGesture, [3, 4]);
+        else {
+            swipeGestureToFingersMap.set(verticalSwipe3FingerGesture, [3]);
+            swipeGestureToFingersMap.set(verticalSwipe4FingerGesture, [4]);
+        }
+
+        return swipeGestureToFingersMap;
+    }
+
+    private _getHorizontalSwipeGestureTypeAndFingers(): Map<
+        SwipeGestureType,
+        number[]
+    > {
+        if (!this.settings) return new Map();
+
+        const horizontalSwipe3FingerGesture = this.settings.get_enum(
+            'horizontal-swipe-3-fingers-gesture'
+        );
+        const horizontalSwipe4FingerGesture = this.settings.get_enum(
+            'horizontal-swipe-4-fingers-gesture'
+        );
+
+        const swipeGestureToFingersMap = new Map<SwipeGestureType, number[]>();
+
+        if (horizontalSwipe3FingerGesture === horizontalSwipe4FingerGesture)
+            swipeGestureToFingersMap.set(horizontalSwipe3FingerGesture, [3, 4]);
+        else {
+            swipeGestureToFingersMap.set(horizontalSwipe3FingerGesture, [3]);
+            swipeGestureToFingersMap.set(horizontalSwipe4FingerGesture, [4]);
+        }
+
+        return swipeGestureToFingersMap;
     }
 
     private _getPinchGestureTypeAndFingers(): Map<PinchGestureType, number[]> {
@@ -179,10 +355,6 @@ export default class TouchpadGestureCustomization extends Extension {
 
     _initializeSettings() {
         if (this.settings) {
-            Constants.ExtSettings.DEFAULT_SESSION_WORKSPACE_GESTURE =
-                this.settings.get_boolean('default-session-workspace');
-            Constants.ExtSettings.DEFAULT_OVERVIEW_GESTURE =
-                this.settings.get_boolean('default-overview');
             Constants.ExtSettings.ALLOW_MINIMIZE_WINDOW =
                 this.settings.get_boolean('allow-minimize-window');
             Constants.ExtSettings.FOLLOW_NATURAL_SCROLL =

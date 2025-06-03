@@ -12,100 +12,76 @@
         </items>
     </object>
 
+     <object class="GtkStringList" id="vertical_swipe_gestures_model">
+        <items>
+            <item translatable="yes">None</item>
+            <item translatable="yes">Overview Navigation</item>
+            <item translatable="yes">Workspace Switching</item>
+            <item translatable="yes">Window Switching</item>
+            <item translatable="yes">Volume Control</item>
+            <item translatable="yes">Window Manipulation</item>
+        </items>
+    </object>
+
+    <object class="GtkStringList" id="horizontal_swipe_gestures_model">
+        <items>
+            <item translatable="yes">None</item>
+            <item translatable="yes">Overview Navigation</item>
+            <item translatable="yes">Workspace Switching</item>
+            <item translatable="yes">Window Switching</item>
+            <item translatable="yes">Volume Control</item>
+        </items>
+    </object>
+
     <object class="AdwPreferencesPage" id="gestures_page">
-        <property name="title">Gestures</property>
+        <property name="title">System Gestures</property>
         <property name="icon-name">gesture-swipe-right-symbolic</property>
 
-        <!-- Swipe Gestures -->
+        <!-- 3-fingers Swipe Gestures -->
         <child>
             <object class="AdwPreferencesGroup">
-                <property name="title">Swipe Gestures</property>
+                <property name="title">3-Fingers Swipe Gestures</property>
 
-                <!-- Use default(4-finger) for session overview navigation -->
+                <!-- Vertical -->
                 <child>
-                    <object class="AdwActionRow">
-                        <property name="title" translatable="yes">4-finger gestures for overview navigation</property>
-                        <property name="subtitle">For navigating between desktop, activities and app-grid using vertical swipe</property>
-                        <child>
-                            <object class="GtkSwitch" id="default-overview">
-                                <property name="valign">center</property>
-                                <property name="active">True</property>
-                            </object>
-                        </child>
+                    <object class="AdwComboRow" id="vertical-swipe-3-fingers-gesture">
+                        <property name="title" translatable="yes">3-fingers vertical swipe gesture</property>
+                        <property name="model">vertical_swipe_gestures_model</property>
                     </object>
                 </child>
 
-                <!-- Use default(4-finger) for session workspace switching -->
+                <!-- Horizontal -->
                 <child>
-                    <object class="AdwActionRow">
-                        <property name="title" translatable="yes">4-finger gestures for workspace switching</property>
-                        <property name="subtitle">For navigating between workspaces using horizontal swipe</property>
-                        <child>
-                            <object class="GtkSwitch" id="default-session-workspace">
-                                <property name="valign">center</property>
-                                <property name="active">True</property>
-                            </object>
-                        </child>
+                    <object class="AdwComboRow" id="horizontal-swipe-3-fingers-gesture">
+                        <property name="title" translatable="yes">3-fingers horizontal swipe gesture</property>
+                        <property name="model">horizontal_swipe_gestures_model</property>
+                    </object>
+                </child>
+            
+            </object>
+        </child>
+
+        <!-- 4-fingers Swipe Gestures -->
+        <child>
+            <object class="AdwPreferencesGroup">
+                <property name="title">4-Fingers Swipe Gestures</property>
+
+                <!-- Vertical -->
+                <child>
+                    <object class="AdwComboRow" id="vertical-swipe-4-fingers-gesture">
+                        <property name="title" translatable="yes">4-fingers vertical swipe gesture</property>
+                        <property name="model">vertical_swipe_gestures_model</property>
                     </object>
                 </child>
 
-                <!-- AltTab Gesture -->
+                <!-- Horizontal -->
                 <child>
-                    <object class="AdwActionRow">
-                        <property name="title" translatable="yes">Window switching</property>
-                        <property name="subtitle">Switching windows using 3-finger horizontal swipe</property>
-                        <child>
-                            <object class="GtkSwitch" id="enable-alttab-gesture">
-                                <property name="valign">center</property>
-                                <property name="active">True</property>
-                            </object>
-                        </child>
+                    <object class="AdwComboRow" id="horizontal-swipe-4-fingers-gesture">
+                        <property name="title" translatable="yes">4-fingers horizontal swipe gesture</property>
+                        <property name="model">horizontal_swipe_gestures_model</property>
                     </object>
                 </child>
-                
-                <!-- Window manipulation Gesture -->
-                <child>
-                    <object class="AdwActionRow">
-                        <property name="title" translatable="yes">Window manipulation</property>
-                        <property name="subtitle">Snapping, unmaximize, maximize or fullscreen a window using 3-finger swipe (Hold then slightly swipe down to activate)</property>
-                        <child>
-                            <object class="GtkSwitch" id="enable-window-manipulation-gesture">
-                                <property name="valign">center</property>
-                                <property name="active">True</property>
-                            </object>
-                        </child>
-                    </object>
-                </child>
-
-                <!-- Minimize window -->
-                <child>
-                    <object class="AdwActionRow">
-                        <property name="title" translatable="yes">Minimize window</property>
-                        <property name="subtitle">Minimize window using 3-finger swipe. This will disable tiling gesture. Swipe down to activate</property>
-                        <property name="sensitive" bind-source="enable-window-manipulation-gesture" bind-property="active" bind-flags="sync-create"></property>
-                        <child>
-                            <object class="GtkSwitch" id="allow-minimize-window">
-                                <property name="valign">center</property>
-                                <property name="active">True</property>
-                            </object>
-                        </child>
-                    </object>
-                </child>
-
-                <!-- Volume Control -->
-                <child>
-                    <object class="AdwActionRow">
-                        <property name="title" translatable="yes">Volume Control</property>
-                        <property name="subtitle">[Experimental] Control system volume using 3-finger vertical swipe. Only work if 'Window Manipulation' is disabled.</property>
-                        <property name="sensitive" bind-source="enable-window-manipulation-gesture" bind-property="active" bind-flags="invert-boolean">False</property>
-                        <child>
-                            <object class="GtkSwitch" id="enable-volume-control-gesture">
-                                <property name="valign">center</property>
-                                <property name="active">False</property>
-                            </object>
-                        </child>
-                    </object>
-                </child>
+            
             </object>
         </child>
 
@@ -128,6 +104,41 @@
                     <object class="AdwComboRow" id="pinch-4-finger-gesture">
                         <property name="title" translatable="yes">4 finger pinch</property>
                         <property name="model">pinch_gestures_model</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <!-- Other Gestures -->
+        <child>
+            <object class="AdwPreferencesGroup">
+                <property name="title">Other Gestures</property>
+
+                <!-- Minimize window -->
+                <child>
+                    <object class="AdwActionRow">
+                        <property name="title" translatable="yes">Minimize window</property>
+                        <property name="subtitle">Minimize window using vertical swipe. This will disable tiling gesture. Swipe down to activate</property>
+                        <child>
+                            <object class="GtkSwitch" id="allow-minimize-window">
+                                <property name="valign">center</property>
+                                <property name="active">True</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+
+                <!-- Volume Control -->
+                <child>
+                    <object class="AdwActionRow">
+                        <property name="title" translatable="yes">Volume Control</property>
+                        <property name="subtitle">[Experimental] Control system volume using 3-finger vertical swipe. Only work if 'Window Manipulation' is disabled.</property>
+                        <child>
+                            <object class="GtkSwitch" id="enable-volume-control-gesture">
+                                <property name="valign">center</property>
+                                <property name="active">False</property>
+                            </object>
+                        </child>
                     </object>
                 </child>
             </object>

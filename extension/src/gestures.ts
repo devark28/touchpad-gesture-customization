@@ -88,7 +88,7 @@ abstract class SwipeTrackerEndPointsModifer {
         callback: (tracker: ShallowSwipeTracker) => void
     ) {
         const _tracker: ShallowSwipeTracker = {
-            orientation: Clutter.Orientation.HORIZONTAL,
+            orientation: tracker.orientation,
             confirmSwipe: (
                 distance,
                 snapPoints,
@@ -101,7 +101,6 @@ abstract class SwipeTrackerEndPointsModifer {
                 snapPoints.unshift(this._firstVal - 1);
                 snapPoints.push(this._lastVal + 1);
 
-                tracker.orientation = _tracker.orientation;
                 tracker.confirmSwipe(
                     distance,
                     snapPoints,
@@ -115,7 +114,9 @@ abstract class SwipeTrackerEndPointsModifer {
     }
 
     public destroy(): void {
-        this._swipeTracker.enabled = false;
+        if (this._swipeTracker) {
+            this._swipeTracker.enabled = false;
+        }
     }
 }
 
@@ -123,14 +124,18 @@ class WorkspaceAnimationModifier extends SwipeTrackerEndPointsModifer {
     private _workspaceAnimation: WorkspaceAnimationController;
     protected _swipeTracker: SwipeTracker;
 
-    constructor(wm: typeof Main.wm) {
+    constructor(
+        nfingers: number[],
+        wm: typeof Main.wm,
+        orientation?: Clutter.Orientation
+    ) {
         super();
         this._workspaceAnimation = wm._workspaceAnimation;
         this._swipeTracker = createSwipeTracker(
             global.stage,
-            ExtSettings.DEFAULT_SESSION_WORKSPACE_GESTURE ? [3] : [4],
+            nfingers,
             Shell.ActionMode.NORMAL,
-            Clutter.Orientation.HORIZONTAL,
+            orientation ?? Clutter.Orientation.HORIZONTAL,
             ExtSettings.FOLLOW_NATURAL_SCROLL,
             1,
             {allowTouch: false}
@@ -152,7 +157,6 @@ class WorkspaceAnimationModifier extends SwipeTrackerEndPointsModifer {
                 shallowTracker,
                 monitor
             );
-            tracker.orientation = shallowTracker.orientation;
         });
     }
 
@@ -191,11 +195,13 @@ class WorkspaceAnimationModifier extends SwipeTrackerEndPointsModifer {
 export class GestureExtension implements ISubExtension {
     private _stateAdjustment: OverviewAdjustment;
     private _swipeTrackers: ShellSwipeTracker[];
-    private _workspaceAnimationModifier: WorkspaceAnimationModifier;
+    private _verticalWorkspaceAnimationModifier?: WorkspaceAnimationModifier;
+    private _horizontalWorkspaceAnimationModifier?: WorkspaceAnimationModifier;
 
     constructor() {
         this._stateAdjustment =
             Main.overview._overview._controls._stateAdjustment;
+
         this._swipeTrackers = [
             {
                 swipeTracker:
@@ -243,14 +249,29 @@ export class GestureExtension implements ISubExtension {
                 },
             },
         ];
+    }
 
-        this._workspaceAnimationModifier = new WorkspaceAnimationModifier(
-            Main.wm
-        );
+    setVerticalWorkspceAnimationModifier(nfingers: number[]) {
+        this._verticalWorkspaceAnimationModifier =
+            new WorkspaceAnimationModifier(
+                nfingers,
+                Main.wm,
+                Clutter.Orientation.VERTICAL
+            );
+    }
+
+    setHorizontalWorkspaceAnimationModifier(nfingers: number[]) {
+        this._horizontalWorkspaceAnimationModifier =
+            new WorkspaceAnimationModifier(
+                nfingers,
+                Main.wm,
+                Clutter.Orientation.HORIZONTAL
+            );
     }
 
     apply(): void {
-        this._workspaceAnimationModifier.apply();
+        this._verticalWorkspaceAnimationModifier?.apply();
+        this._horizontalWorkspaceAnimationModifier?.apply();
 
         this._swipeTrackers.forEach(entry => {
             const {
@@ -290,7 +311,8 @@ export class GestureExtension implements ISubExtension {
                 connectTouchpadEventToTracker(swipeTracker._touchpadGesture);
         });
 
-        this._workspaceAnimationModifier.destroy();
+        this._verticalWorkspaceAnimationModifier?.destroy();
+        this._horizontalWorkspaceAnimationModifier?.destroy();
     }
 
     _attachGestureToTracker(

@@ -125,18 +125,6 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
     bind_int_value('alttab-delay', settings, builder);
     bind_int_value('hold-swipe-delay-duration', settings, builder);
 
-    bind_boolean_value(
-        'default-session-workspace',
-        settings,
-        builder,
-        Gio.SettingsBindFlags.INVERT_BOOLEAN
-    );
-    bind_boolean_value(
-        'default-overview',
-        settings,
-        builder,
-        Gio.SettingsBindFlags.INVERT_BOOLEAN
-    );
     bind_boolean_value('follow-natural-scroll', settings, builder);
     bind_boolean_value(
         'default-overview-gesture-direction',
@@ -145,10 +133,13 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
         Gio.SettingsBindFlags.INVERT_BOOLEAN
     );
 
-    bind_boolean_value('enable-alttab-gesture', settings, builder);
-    bind_boolean_value('enable-window-manipulation-gesture', settings, builder);
     bind_boolean_value('allow-minimize-window', settings, builder);
     bind_boolean_value('enable-volume-control-gesture', settings, builder);
+
+    bind_combo_box('vertical-swipe-3-fingers-gesture', settings, builder);
+    bind_combo_box('horizontal-swipe-3-fingers-gesture', settings, builder);
+    bind_combo_box('vertical-swipe-4-fingers-gesture', settings, builder);
+    bind_combo_box('horizontal-swipe-4-fingers-gesture', settings, builder);
 
     bind_combo_box('pinch-3-finger-gesture', settings, builder);
     bind_combo_box('pinch-4-finger-gesture', settings, builder);

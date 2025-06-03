@@ -49,7 +49,7 @@ export class ForwardBackGestureExtension implements ISubExtension {
 
         this._swipeTracker = createSwipeTracker(
             global.stage,
-            ExtSettings.DEFAULT_SESSION_WORKSPACE_GESTURE ? [4] : [3],
+            [4, 3], //TODO: check if this is a problem
             Shell.ActionMode.NORMAL,
             enableVerticalSwipe
                 ? Clutter.Orientation.VERTICAL

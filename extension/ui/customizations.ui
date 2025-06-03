@@ -101,7 +101,6 @@
                 <child>
                     <object class="AdwActionRow">
                         <property name="title" translatable="yes">Window switcher popup delay (ms)</property>
-                        <property name="sensitive" bind-source="enable-alttab-gesture" bind-property="active" bind-flags="sync-create"></property>
                         <child>
                             <object class="GtkSpinButton" id="alttab-delay">
                                 <property name="valign">center</property>

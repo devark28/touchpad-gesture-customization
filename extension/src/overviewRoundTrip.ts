@@ -20,13 +20,15 @@ export class OverviewRoundTripGestureExtension implements ISubExtension {
     private _overviewControls: ControlsManager;
     private _stateAdjustment: OverviewAdjustment;
     private _oldGetStateTransitionParams: typeof OverviewAdjustment.prototype.getStateTransitionParams;
-    private _swipeTracker?: typeof SwipeTracker.prototype;
     private _progress = 0;
     private _extensionState = ExtensionState.DEFAULT;
-    private _connectors: number[];
     private _shownEventId = 0;
     private _hiddenEventId = 0;
     private _navigationStates: OverviewNavigationState;
+    private _verticalSwipeTracker?: typeof SwipeTracker.prototype;
+    private _horizontalSwipeTracker?: typeof SwipeTracker.prototype;
+    private _verticalConnectors?: number[];
+    private _horizontalConnectors?: number[];
 
     constructor(navigationStates: OverviewNavigationState) {
         this._navigationStates = navigationStates;
@@ -35,7 +37,6 @@ export class OverviewRoundTripGestureExtension implements ISubExtension {
         this._oldGetStateTransitionParams =
             this._stateAdjustment.getStateTransitionParams;
         this._progress = 0;
-        this._connectors = [];
     }
 
     _getStateTransitionParams(): typeof OverviewAdjustment.prototype.getStateTransitionParams.prototype {
@@ -61,26 +62,68 @@ export class OverviewRoundTripGestureExtension implements ISubExtension {
         }
     }
 
-    apply(): void {
-        Main.overview._swipeTracker.enabled = false;
+    setVerticalSwipeTracker(nfingers: number[]) {
+        this._verticalConnectors?.forEach(connector =>
+            this._verticalSwipeTracker?.disconnect(connector)
+        );
+        this._verticalSwipeTracker?.destroy();
 
-        this._swipeTracker = createSwipeTracker(
+        this._verticalSwipeTracker = createSwipeTracker(
             global.stage,
-            ExtSettings.DEFAULT_OVERVIEW_GESTURE ? [3] : [4],
+            nfingers,
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
             Clutter.Orientation.VERTICAL,
             ExtSettings.DEFAULT_OVERVIEW_GESTURE_DIRECTION
         );
 
-        this._connectors.push(
-            this._swipeTracker.connect('begin', this._gestureBegin.bind(this))
+        this._verticalConnectors = [
+            this._verticalSwipeTracker.connect(
+                'begin',
+                this._gestureBegin.bind(this)
+            ),
+            this._verticalSwipeTracker.connect(
+                'update',
+                this._gestureUpdate.bind(this)
+            ),
+            this._verticalSwipeTracker.connect(
+                'end',
+                this._gestureEnd.bind(this)
+            ),
+        ];
+    }
+
+    setHorizontalSwipeTracker(nfingers: number[]) {
+        this._horizontalConnectors?.forEach(connector =>
+            this._horizontalSwipeTracker?.disconnect(connector)
         );
-        this._connectors.push(
-            this._swipeTracker.connect('update', this._gestureUpdate.bind(this))
+        this._horizontalSwipeTracker?.destroy();
+
+        this._horizontalSwipeTracker = createSwipeTracker(
+            global.stage,
+            nfingers,
+            Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
+            Clutter.Orientation.HORIZONTAL,
+            ExtSettings.DEFAULT_OVERVIEW_GESTURE_DIRECTION
         );
-        this._connectors.push(
-            this._swipeTracker.connect('end', this._gestureEnd.bind(this))
-        );
+
+        this._horizontalConnectors = [
+            this._horizontalSwipeTracker.connect(
+                'begin',
+                this._gestureBegin.bind(this)
+            ),
+            this._horizontalSwipeTracker.connect(
+                'update',
+                this._gestureUpdate.bind(this)
+            ),
+            this._horizontalSwipeTracker.connect(
+                'end',
+                this._gestureEnd.bind(this)
+            ),
+        ];
+    }
+
+    apply(): void {
+        Main.overview._swipeTracker.enabled = false;
 
         // override 'getStateTransitionParams' function
         this._stateAdjustment.getStateTransitionParams =
@@ -101,15 +144,19 @@ export class OverviewRoundTripGestureExtension implements ISubExtension {
     }
 
     destroy(): void {
-        if (this._swipeTracker) {
-            this._connectors.forEach(connector =>
-                this._swipeTracker?.disconnect(connector)
-            );
-            this._swipeTracker.destroy();
-            this._swipeTracker = undefined;
-        }
+        this._verticalConnectors?.forEach(connector =>
+            this._verticalSwipeTracker?.disconnect(connector)
+        );
+        this._verticalSwipeTracker?.destroy();
+        this._verticalConnectors = undefined;
+        this._verticalSwipeTracker = undefined;
 
-        this._connectors = [];
+        this._horizontalConnectors?.forEach(connector =>
+            this._horizontalSwipeTracker?.disconnect(connector)
+        );
+        this._horizontalSwipeTracker?.destroy();
+        this._horizontalConnectors = undefined;
+        this._horizontalSwipeTracker = undefined;
 
         Main.overview._swipeTracker.enabled = true;
         this._stateAdjustment.getStateTransitionParams =
@@ -186,7 +233,8 @@ export class OverviewRoundTripGestureExtension implements ISubExtension {
             );
         }
 
-        // log(`end: progress=${this._progress}, endProgress=${endProgress}, overview progress=${this._getOverviewProgressValue(endProgress)}`)
+        // log(`end: progress=${this._progress}, endProgress=${endProgress}, \
+        //     overview progress=${this._getOverviewProgressValue(endProgress)}`)
         Main.overview._gestureEnd(tracker, duration, endProgress);
     }
 

@@ -39,8 +39,10 @@ enum AltTabExtState {
 }
 
 export default class AltTabGestureExtension implements ISubExtension {
-    private _connectHandlers: number[];
-    private _touchpadSwipeTracker: typeof TouchpadSwipeGesture.prototype;
+    private _verticalTouchpadSwipeTracker?: typeof TouchpadSwipeGesture.prototype;
+    private _horizontalTouchpadSwipeTracker?: typeof TouchpadSwipeGesture.prototype;
+    private _verticalConnectHandlers?: number[];
+    private _horizontalConnectHandlers?: number[];
     private _adjustment: St.Adjustment;
     private _switcher?: typeof WindowSwitcherPopup.prototype;
     private _extState = AltTabExtState.DISABLED;
@@ -48,16 +50,6 @@ export default class AltTabGestureExtension implements ISubExtension {
     private _altTabTimeoutId = 0;
 
     constructor() {
-        this._connectHandlers = [];
-
-        this._touchpadSwipeTracker = new TouchpadSwipeGesture(
-            ExtSettings.DEFAULT_SESSION_WORKSPACE_GESTURE ? [4] : [3],
-            Shell.ActionMode.ALL,
-            Clutter.Orientation.HORIZONTAL,
-            false,
-            this._checkAllowedGesture.bind(this)
-        );
-
         this._adjustment = new St.Adjustment({
             value: 0,
             lower: 0,
@@ -65,13 +57,88 @@ export default class AltTabGestureExtension implements ISubExtension {
         });
     }
 
-    _checkAllowedGesture(): boolean {
+    setVerticalTouchpadSwipeTracker(nfingers: number[]) {
+        // disconnect and destroy vertical touchpad swipe tracker if exist
+        this._verticalConnectHandlers?.forEach(handle =>
+            this._verticalTouchpadSwipeTracker?.disconnect(handle)
+        );
+
+        this._verticalTouchpadSwipeTracker?.destroy();
+
+        this._verticalTouchpadSwipeTracker = new TouchpadSwipeGesture(
+            nfingers,
+            Shell.ActionMode.ALL,
+            Clutter.Orientation.VERTICAL,
+            false,
+            this._checkAllowedGestureforVerticalSwipe.bind(this)
+        );
+
+        this._verticalConnectHandlers = [
+            this._verticalTouchpadSwipeTracker.connect(
+                'begin',
+                this._gestureBegin.bind(this)
+            ),
+            this._verticalTouchpadSwipeTracker.connect(
+                'update',
+                this._gestureUpdate.bind(this)
+            ),
+            this._verticalTouchpadSwipeTracker.connect(
+                'end',
+                this._gestureEnd.bind(this)
+            ),
+        ];
+    }
+
+    setHorizontalTouchpadSwipeTracker(nfingers: number[]) {
+        // disconnect and destroy horizontal touchpad swipe tracker if exist
+        this._horizontalConnectHandlers?.forEach(handle =>
+            this._horizontalTouchpadSwipeTracker?.disconnect(handle)
+        );
+
+        this._horizontalTouchpadSwipeTracker?.destroy();
+
+        this._horizontalTouchpadSwipeTracker = new TouchpadSwipeGesture(
+            nfingers,
+            Shell.ActionMode.ALL,
+            Clutter.Orientation.HORIZONTAL,
+            false,
+            this._checkAllowedGestureforHorizontalSwipe.bind(this)
+        );
+
+        this._horizontalConnectHandlers = [
+            this._horizontalTouchpadSwipeTracker.connect(
+                'begin',
+                this._gestureBegin.bind(this)
+            ),
+            this._horizontalTouchpadSwipeTracker.connect(
+                'update',
+                this._gestureUpdate.bind(this)
+            ),
+            this._horizontalTouchpadSwipeTracker.connect(
+                'end',
+                this._gestureEnd.bind(this)
+            ),
+        ];
+    }
+
+    _checkAllowedGestureforVerticalSwipe(): boolean {
         return (
             this._extState <= AltTabExtState.DEFAULT &&
             Main.actionMode === Shell.ActionMode.NORMAL &&
             !(
                 ExtSettings.APP_GESTURES &&
-                this._touchpadSwipeTracker.isItHoldAndSwipeGesture()
+                this._verticalTouchpadSwipeTracker?.isItHoldAndSwipeGesture()
+            )
+        );
+    }
+
+    _checkAllowedGestureforHorizontalSwipe(): boolean {
+        return (
+            this._extState <= AltTabExtState.DEFAULT &&
+            Main.actionMode === Shell.ActionMode.NORMAL &&
+            !(
+                ExtSettings.APP_GESTURES &&
+                this._horizontalTouchpadSwipeTracker?.isItHoldAndSwipeGesture()
             )
         );
     }
@@ -82,35 +149,29 @@ export default class AltTabGestureExtension implements ISubExtension {
             this._onUpdateAdjustmentValue.bind(this)
         );
 
-        this._connectHandlers.push(
-            this._touchpadSwipeTracker.connect(
-                'begin',
-                this._gestureBegin.bind(this)
-            )
-        );
-        this._connectHandlers.push(
-            this._touchpadSwipeTracker.connect(
-                'update',
-                this._gestureUpdate.bind(this)
-            )
-        );
-        this._connectHandlers.push(
-            this._touchpadSwipeTracker.connect(
-                'end',
-                this._gestureEnd.bind(this)
-            )
-        );
         this._extState = AltTabExtState.DEFAULT;
     }
 
     destroy(): void {
-        this._extState = AltTabExtState.DISABLED;
-        this._connectHandlers.forEach(handle =>
-            this._touchpadSwipeTracker.disconnect(handle)
+        // disconnect and destroy vertical touchpad swipe tracker
+        this._verticalConnectHandlers?.forEach(handle =>
+            this._verticalTouchpadSwipeTracker?.disconnect(handle)
         );
 
-        this._touchpadSwipeTracker.destroy();
-        this._connectHandlers = [];
+        this._verticalTouchpadSwipeTracker?.destroy();
+        this._verticalTouchpadSwipeTracker = undefined;
+        this._verticalConnectHandlers = undefined;
+
+        // disconnect and destroy horizontal touchpad swipe tracker
+        this._horizontalConnectHandlers?.forEach(handle =>
+            this._horizontalTouchpadSwipeTracker?.disconnect(handle)
+        );
+
+        this._horizontalTouchpadSwipeTracker?.destroy();
+        this._horizontalTouchpadSwipeTracker = undefined;
+        this._horizontalConnectHandlers = undefined;
+
+        this._extState = AltTabExtState.DISABLED;
 
         if (this._altTabTimeoutId) {
             GLib.source_remove(this._altTabTimeoutId);

@@ -1,7 +1,6 @@
 import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
 import {SwipeTracker} from 'resource:///org/gnome/shell/ui/swipeTracker.js';
-import {ExtSettings} from '../constants.js';
 import {createSwipeTracker} from './swipeTracker.js';
 import {getVirtualKeyboard, IVirtualKeyboard} from './utils/keyboard.js';
 
@@ -23,7 +22,7 @@ export class VolumeControlGestureExtension implements ISubExtension {
 
         this._swipeTracker = createSwipeTracker(
             global.stage,
-            ExtSettings.DEFAULT_OVERVIEW_GESTURE ? [4] : [3],
+            [4, 3], //TODO: check if this is a problem
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
             Clutter.Orientation.VERTICAL,
             true,
