@@ -38,6 +38,7 @@ export default class TouchpadGestureCustomization extends Extension {
             'touchpad-speed-scale',
             'alttab-delay',
             'touchpad-pinch-speed',
+            'volume-control-speed',
         ];
     }
 
@@ -393,6 +394,9 @@ export default class TouchpadGestureCustomization extends Extension {
             Constants.TouchpadConstants.PINCH_MULTIPLIER =
                 Constants.TouchpadConstants.DEFAULT_PINCH_MULTIPLIER *
                 this.settings.get_double('touchpad-pinch-speed');
+            Constants.TouchpadConstants.VOLUME_CONTROL_MULTIPLIER =
+                Constants.TouchpadConstants.DEFAULT_VOLUME_CONTROL_MULTIPLIER *
+                this.settings.get_double('volume-control-speed');
             Constants.AltTabConstants.DELAY_DURATION =
                 this.settings.get_int('alttab-delay');
             Constants.TouchpadConstants.HOLD_SWIPE_DELAY_DURATION =

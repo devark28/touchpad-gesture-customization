@@ -121,6 +121,12 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
         settings,
         builder
     );
+    display_in_log_scale(
+        'volume-control-speed',
+        'volume-control-speed_display-value',
+        settings,
+        builder
+    );
 
     bind_int_value('alttab-delay', settings, builder);
     bind_int_value('hold-swipe-delay-duration', settings, builder);

@@ -3,6 +3,7 @@ import Shell from 'gi://Shell';
 import {SwipeTracker} from 'resource:///org/gnome/shell/ui/swipeTracker.js';
 import {createSwipeTracker} from './swipeTracker.js';
 import {getVirtualKeyboard, IVirtualKeyboard} from './utils/keyboard.js';
+import {TouchpadConstants} from '../constants.js';
 
 enum VolumeGestureState {
     VOLUME_UP = 1,
@@ -54,7 +55,7 @@ export class VolumeControlGestureExtension implements ISubExtension {
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
             Clutter.Orientation.VERTICAL,
             true,
-            1,
+            TouchpadConstants.VOLUME_CONTROL_MULTIPLIER,
             {allowTouch: false}
         );
 
@@ -126,7 +127,9 @@ export class VolumeControlGestureExtension implements ISubExtension {
             case VolumeGestureState.DEFAULT:
                 if (this._progress > VolumeGestureState.DEFAULT) {
                     this._volumeGestureState = VolumeGestureState.VOLUME_UP;
-                } else {
+                }
+
+                if (this._progress < VolumeGestureState.DEFAULT) {
                     this._volumeGestureState = VolumeGestureState.VOLUME_DOWN;
                 }
 

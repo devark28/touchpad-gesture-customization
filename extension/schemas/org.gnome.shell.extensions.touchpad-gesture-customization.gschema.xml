@@ -34,6 +34,9 @@
     <key name="touchpad-pinch-speed" type="d">
       <default>1.0</default>
     </key>
+    <key name="volume-control-speed" type="d">
+      <default>1.0</default>
+    </key>
     <key name="alttab-delay" type="i">
       <default>150</default>
     </key>

@@ -43,7 +43,8 @@ export type IntegerSettingsKeys = 'alttab-delay' | 'hold-swipe-delay-duration';
 
 export type DoubleSettingsKeys =
     | 'touchpad-speed-scale'
-    | 'touchpad-pinch-speed';
+    | 'touchpad-pinch-speed'
+    | 'volume-control-speed';
 
 export type EnumSettingsKeys =
     | 'vertical-swipe-3-fingers-gesture'
@@ -69,7 +70,8 @@ export type AllUIObjectKeys =
     | UIPageObjectIds
     | AllSettingsKeys
     | 'touchpad-speed-scale_display-value'
-    | 'touchpad-pinch-speed_display-value';
+    | 'touchpad-pinch-speed_display-value'
+    | 'volume-control-speed_display-value';
 
 type Enum_Functions<K extends EnumSettingsKeys, T> = {
     get_enum(key: K): T;
