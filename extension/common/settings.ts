@@ -37,7 +37,7 @@ export type BooleanSettingsKeys =
     | 'follow-natural-scroll'
     | 'enable-forward-back-gesture'
     | 'default-overview-gesture-direction'
-    | 'enable-volume-control-gesture';
+    | 'enable-vertical-app-gesture';
 
 export type IntegerSettingsKeys = 'alttab-delay' | 'hold-swipe-delay-duration';
 

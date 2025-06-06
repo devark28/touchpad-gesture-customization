@@ -8,7 +8,7 @@
             <item translatable="yes">None</item>
             <item translatable="yes">Show Desktop</item>
             <item translatable="yes">Close Window</item>
-            <item translatable="yes">Invoke Ctrl+W shortcut</item>
+            <item translatable="yes">Close Tab (Ctrl + W)</item>
         </items>
     </object>
 
@@ -89,12 +89,11 @@
         <child>
             <object class="AdwPreferencesGroup">
                 <property name="title">Pinch Gestures</property>
-                <property name="description">The cursor need to be pointed to either the desktop of top panel to work</property>
 
                 <!-- 3 finger pinch gesture -->
                 <child>
                     <object class="AdwComboRow" id="pinch-3-finger-gesture">
-                        <property name="title" translatable="yes">3 finger pinch</property>
+                        <property name="title" translatable="yes">3-fingers pinch gesture</property>
                         <property name="model">pinch_gestures_model</property>
                     </object>
                 </child>
@@ -102,43 +101,8 @@
                 <!-- 4 finger pinch gesture -->
                 <child>
                     <object class="AdwComboRow" id="pinch-4-finger-gesture">
-                        <property name="title" translatable="yes">4 finger pinch</property>
+                        <property name="title" translatable="yes">4-fingers pinch gesture</property>
                         <property name="model">pinch_gestures_model</property>
-                    </object>
-                </child>
-            </object>
-        </child>
-
-        <!-- Other Gestures -->
-        <child>
-            <object class="AdwPreferencesGroup">
-                <property name="title">Other Gestures</property>
-
-                <!-- Minimize window -->
-                <child>
-                    <object class="AdwActionRow">
-                        <property name="title" translatable="yes">Minimize window</property>
-                        <property name="subtitle">Minimize window using vertical swipe. This will disable tiling gesture. Swipe down to activate</property>
-                        <child>
-                            <object class="GtkSwitch" id="allow-minimize-window">
-                                <property name="valign">center</property>
-                                <property name="active">True</property>
-                            </object>
-                        </child>
-                    </object>
-                </child>
-
-                <!-- Volume Control -->
-                <child>
-                    <object class="AdwActionRow">
-                        <property name="title" translatable="yes">Volume Control</property>
-                        <property name="subtitle">[Experimental] Control system volume using 3-finger vertical swipe. Only work if 'Window Manipulation' is disabled.</property>
-                        <child>
-                            <object class="GtkSwitch" id="enable-volume-control-gesture">
-                                <property name="valign">center</property>
-                                <property name="active">False</property>
-                            </object>
-                        </child>
                     </object>
                 </child>
             </object>

@@ -24,42 +24,49 @@ gnome-extensions enable touchpad-gesture-customization@coooolapps.com
 ```
 
 ## Gestures (including built-in ones)
-| Swipe Gesture                           | Modes    | Fingers | Direction       |
-| :-------------------------------------- | :------- | :------ | :-------------- |
-| Switch windows                          | Desktop  | 3       | Horizontal      |
-| Switch workspaces                       | Overview | 2/3     | Horizontal      |
-| Switch app pages                        | AppGrid  | 2/3     | Horizontal      |
-| Switch workspaces                       | *        | 4       | Horizontal      |
-| Desktop/Overview/AppGrid navigation     | *        | 4       | Vertical        |
-| Unmaximize/maximize/fullscreen a window | Desktop  | 3       | Vertical        |
-| Minimize a window                       | Desktop  | 3       | Vertical        |
-| Snap/half-tile a window                 | Desktop  | 3       | Explained below |
+| Swipe Gesture                           | Modes    | Fingers  | Direction           |
+| :-------------------------------------- | :------- | :------- | :------------------ |
+| Desktop/Overview/AppGrid navigation     | Any      | 3/4/both | Vertical/Horizontal |
+| Switch workspaces                       | Overview | 2|3|4    | Horizontal          |
+| Switch workspaces                       | Any      | 3/4/both | Vertical/Horizontal |
+| Switch app pages                        | AppGrid  | 2/3      | Horizontal          |
+| Switch windows                          | Desktop  | 3/4/both | Vertical/Horizontal |
+| Unmaximize/maximize/fullscreen a window | Desktop  | 3/4/both | Vertical            |
+| Minimize a window                       | Desktop  | 3/4/both | Vertical            |
+| Snap/half-tile a window                 | Desktop  | 3/4/both | Vertical (*)        |
+| Volume Control (experimental)           | Desktop  | 3/4/both | Vertical/Horizontal |
 
-| Pinch Gesture | Modes   | Fingers |
-| :------------ | :------ | :------ |
-| Show Desktop  | Desktop | 3/4     |
-| Close Window  | Desktop | 3/4     |
-| Close Tab     | Desktop | 3/4     |
+| Pinch Gesture      | Modes   | Fingers |
+| :----------------- | :------ | :------ |
+| Show Desktop (*)   | Desktop | 3/4     |
+| Close Window       | Desktop | 3/4     |
+| Close Tab/Document | Desktop | 3/4     |
 
-| Application Gestures (Configurable) |
-| :--- |
-| Go back or forward in browser tab |
+| Application Gestures (Configurable) (*)          |
+| :----------------------------------------------- |
+| Go back or forward in browser tab                |
+| Page up/down                                     |
 | Switch to next or previous image in image viewer |
-| Switch to next or previous audio |
-| Change tabs |
+| Switch to next or previous audio                 |
+| Change tabs                                      |
 
-**Note**: **Pich gesture** and **Application gesture** currently only work if the mouse pointer is pointed at the desktop or top panel.
-
-#### For activating tiling gesture (inverted T gesture)
-1. Do a 3-finger vertical downward gesture on a unmaximized window
+#### For activating snapping/tiling gesture (inverted T gesture)
+1. Do a 3/4-fingers vertical swipe downward gesture on a unmaximized window but don't release the gesture
 2. Wait a few milliseconds
-3. Do a 3-finger horizontal gesture to tile a window to either side
+3. Do a 3/4-fingers horizontal swipe gesture to tile a window to either side of the screen
+
+#### For activating application gesture
+1. Activating a 3/4-fingers hold gesture on touchpad by pressing your fingers on touchpad but don't release the gesture
+2. Wait a few milliseconds
+3. Do a 3/4-fingers horizontal swipe gesture to activate application gesture (an arrow animation cicle will appear)
+
+#### Application Gesture Notes
+* For horizontal gestures, application gesture only works if 3/4-fingers horizontal swipe is set to **Window Swithing**
+* Application gesture also supports vertical swipe but is still experimental and requires users to turn off other actions for 3/4-figners vertical swipe (i.e. set the action to None).
 
 #### Notes
-* Minimize gesture is available if you have dash-to-dock/panel or similar extension enabled.
-* To activate application gesture, hold for few moments(configurable) before swiping
-* Tiling gesture can't be activated if you enable minimize gesture
-* As mentioned above, **Pich gesture** and **Application gesture** currently only work if the mouse pointer is pointed at the desktop or top panel.
+* Enbaling minimising window gesture for Window Manipulation will disable snapping/tiling gesture.
+* If you are using an older version of GNOME, there might be a bug which prevent the extension from detecting **hold and swipe gesture** and **pich gesture**. If you face this problem, the gesture can only work if the mouse pointer is pointed at the desktop or top panel.
 
 ## Customization
 * To switch to windows from *all* workspaces using 3-fingers swipes, run 

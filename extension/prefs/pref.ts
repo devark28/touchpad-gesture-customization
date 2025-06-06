@@ -132,9 +132,9 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
         builder,
         Gio.SettingsBindFlags.INVERT_BOOLEAN
     );
+    bind_boolean_value('enable-vertical-app-gesture', settings, builder);
 
     bind_boolean_value('allow-minimize-window', settings, builder);
-    bind_boolean_value('enable-volume-control-gesture', settings, builder);
 
     bind_combo_box('vertical-swipe-3-fingers-gesture', settings, builder);
     bind_combo_box('horizontal-swipe-3-fingers-gesture', settings, builder);

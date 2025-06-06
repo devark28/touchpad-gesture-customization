@@ -213,7 +213,7 @@ const AppKeybindingGesturePrefsGroup = GObject.registerClass(
             super({
                 title: 'Enable application specific gestures',
                 description:
-                    'Hold and then swipe to activate the gesture. The cursor need to be pointed to either the desktop of top panel to work',
+                    'Hold and then swipe horizontally to activate the gesture',
             });
 
             this._prefsWindow = prefsWindow;
@@ -249,7 +249,7 @@ const AppKeybindingGesturePrefsGroup = GObject.registerClass(
                 .forEach(appId => this._addAppGestureRow(appId));
 
             // bind switch to setting value
-            const toggleSwitch = new Gtk.Switch({valign: Gtk.Align.START});
+            const toggleSwitch = new Gtk.Switch({valign: Gtk.Align.CENTER});
             this._settings.bind(
                 'enable-forward-back-gesture',
                 toggleSwitch,
@@ -462,25 +462,6 @@ export function getAppKeybindingGesturePrefsPage(
     });
 
     page.add(new AppKeybindingGesturePrefsGroup(prefsWindow, settings));
-
-    // enable vertical swipe option for app gestures
-    const enableVerticalSwipeGroup = new Adw.PreferencesGroup({
-        title: 'Enable vertical swipe for application specific gestures',
-        description:
-            "Use vertical swipe instead of horizontal swipe for application specific gestures. This will disable 'Window Manipulation' and 'Volume Control'",
-    });
-    const toggleSwitch = new Gtk.Switch({valign: Gtk.Align.START});
-
-    // toggleSwitch.sensitive = true;
-    enableVerticalSwipeGroup.set_header_suffix(toggleSwitch);
-    settings.bind(
-        'enable-vertical-app-gesture',
-        toggleSwitch,
-        'active',
-        Gio.SettingsBindFlags.DEFAULT
-    );
-
-    page.add(enableVerticalSwipeGroup);
 
     return page;
 }

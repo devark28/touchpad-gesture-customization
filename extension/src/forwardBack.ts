@@ -49,7 +49,7 @@ export class ForwardBackGestureExtension implements ISubExtension {
 
         this._swipeTracker = createSwipeTracker(
             global.stage,
-            [4, 3], //TODO: check if this is a problem
+            [4, 3], //TODO: add support for vertical hold and swipe without disabling 3/4-fingers vertical swipe
             Shell.ActionMode.NORMAL,
             enableVerticalSwipe
                 ? Clutter.Orientation.VERTICAL

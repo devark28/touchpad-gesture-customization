@@ -361,11 +361,7 @@ export class ShowDesktopExtension implements ISubExtension {
     gestureBegin(tracker: Type_TouchpadPinchGesture) {
         this._extensionState = ExtensionState.ANIMATING;
 
-        Meta.disable_unredirect_for_display(global.display);
-
         this._minimizingWindows = this._getMinimizableWindows();
-
-        // this._setDesktopWindowsBelow();
 
         for (const monitor of this._monitorGroups) {
             const windowActors = this._minimizingWindows
@@ -390,7 +386,6 @@ export class ShowDesktopExtension implements ISubExtension {
 
     gestureUpdate(_tracker: unknown, progress: number) {
         // progress 0 -> NORMAL state, 1 -> SHOW Desktop
-        // printStack();
         for (const monitor of this._monitorGroups)
             monitor.gestureUpdate(progress);
     }
@@ -405,8 +400,6 @@ export class ShowDesktopExtension implements ISubExtension {
 
         this._extensionState = ExtensionState.DEFAULT;
         this._workspaceManagerState = endProgress;
-
-        Meta.enable_unredirect_for_display(global.display);
     }
 
     private _resetState(animate = false) {

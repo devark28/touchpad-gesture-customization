@@ -11,18 +11,46 @@ enum VolumeGestureState {
 }
 
 export class VolumeControlGestureExtension implements ISubExtension {
-    private _connectHandlers: number[];
-    private _swipeTracker: SwipeTracker;
+    private _verticalSwipeTracker?: SwipeTracker;
+    private _horizontalSwipeTracker?: SwipeTracker;
+    private _verticalConnectHandlers?: number[];
+    private _horizontalConnectHandlers?: number[];
     private _keyboard: IVirtualKeyboard;
-    private _volumeGestureState = VolumeGestureState.DEFAULT;
+    private _volumeGestureState: VolumeGestureState;
     private _progress = 0;
 
     constructor() {
         this._keyboard = getVirtualKeyboard();
+        this._progress = 0;
+        this._volumeGestureState = VolumeGestureState.DEFAULT;
+    }
 
-        this._swipeTracker = createSwipeTracker(
+    apply() {
+        this._keyboard = getVirtualKeyboard();
+        this._progress = 0;
+        this._volumeGestureState = VolumeGestureState.DEFAULT;
+    }
+
+    destroy(): void {
+        this._verticalConnectHandlers?.forEach(handle =>
+            this._verticalSwipeTracker?.disconnect(handle)
+        );
+        this._verticalConnectHandlers = undefined;
+        this._verticalSwipeTracker?.destroy();
+
+        this._horizontalConnectHandlers?.forEach(handle =>
+            this._horizontalSwipeTracker?.disconnect(handle)
+        );
+        this._horizontalConnectHandlers = undefined;
+        this._horizontalSwipeTracker?.destroy();
+
+        this._progress = 0;
+    }
+
+    setVerticalSwipeTracker(nfingers: number[]) {
+        this._verticalSwipeTracker = createSwipeTracker(
             global.stage,
-            [4, 3], //TODO: check if this is a problem
+            nfingers,
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
             Clutter.Orientation.VERTICAL,
             true,
@@ -30,24 +58,47 @@ export class VolumeControlGestureExtension implements ISubExtension {
             {allowTouch: false}
         );
 
-        this._connectHandlers = [
-            this._swipeTracker.connect('begin', this._gestureBegin.bind(this)),
-            this._swipeTracker.connect(
+        this._verticalConnectHandlers = [
+            this._verticalSwipeTracker.connect(
+                'begin',
+                this._gestureBegin.bind(this)
+            ),
+            this._verticalSwipeTracker.connect(
                 'update',
                 this._gestureUpdate.bind(this)
             ),
-            this._swipeTracker.connect('end', this._gestureEnd.bind(this)),
+            this._verticalSwipeTracker.connect(
+                'end',
+                this._gestureEnd.bind(this)
+            ),
         ];
-
-        this._progress = 0;
     }
 
-    destroy(): void {
-        this._connectHandlers.forEach(handle =>
-            this._swipeTracker.disconnect(handle)
+    setHorizontalSwipeTracker(nfingers: number[]) {
+        this._horizontalSwipeTracker = createSwipeTracker(
+            global.stage,
+            nfingers,
+            Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
+            Clutter.Orientation.HORIZONTAL,
+            true,
+            1,
+            {allowTouch: false}
         );
-        this._connectHandlers = [];
-        this._swipeTracker.destroy();
+
+        this._horizontalConnectHandlers = [
+            this._horizontalSwipeTracker.connect(
+                'begin',
+                this._gestureBegin.bind(this)
+            ),
+            this._horizontalSwipeTracker.connect(
+                'update',
+                this._gestureUpdate.bind(this)
+            ),
+            this._horizontalSwipeTracker.connect(
+                'end',
+                this._gestureEnd.bind(this)
+            ),
+        ];
     }
 
     _gestureBegin(_tracker: SwipeTracker): void {

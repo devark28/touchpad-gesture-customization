@@ -126,7 +126,7 @@ export default class TouchpadGestureCustomization extends Extension {
         this._extensions.push(overviewRoundTripGesterExtension);
 
         /**
-         * Workspace navigation (not working)
+         * Workspace navigation
          */
 
         // TODO: match workspace navigation control in overview mode and normal mode
@@ -167,25 +167,28 @@ export default class TouchpadGestureCustomization extends Extension {
         const horizontalWindowSwitchingFingers =
             horizontalSwipeToFingersMap.get(SwipeGestureType.WINDOW_SWITCHING);
 
-        // TODO: update class name to WindowSwitchingGestureExtension
-        const windowSwitchingGestureExtension = new AltTabGestureExtension();
+        if (
+            verticalWindowSwitchingFingers?.length ||
+            horizontalWindowSwitchingFingers?.length
+        ) {
+            // TODO: update class name to WindowSwitchingGestureExtension
+            const windowSwitchingGestureExtension =
+                new AltTabGestureExtension();
 
-        // Disable default window switching using horizontal swipe
-        windowSwitchingGestureExtension.setHorizontalTouchpadSwipeTracker([]);
+            // Enable vertical swipe for window switching
+            if (verticalWindowSwitchingFingers?.length)
+                windowSwitchingGestureExtension.setVerticalTouchpadSwipeTracker(
+                    verticalWindowSwitchingFingers
+                );
 
-        // Enable vertical swipe for window switching
-        if (verticalWindowSwitchingFingers?.length)
-            windowSwitchingGestureExtension.setVerticalTouchpadSwipeTracker(
-                verticalWindowSwitchingFingers
-            );
+            // Enable horizontal swipe for window switching
+            if (horizontalWindowSwitchingFingers?.length)
+                windowSwitchingGestureExtension.setHorizontalTouchpadSwipeTracker(
+                    horizontalWindowSwitchingFingers
+                );
 
-        // Enable horizontal swipe for window switching
-        if (horizontalWindowSwitchingFingers?.length)
-            windowSwitchingGestureExtension.setHorizontalTouchpadSwipeTracker(
-                horizontalWindowSwitchingFingers
-            );
-
-        this._extensions.push(windowSwitchingGestureExtension);
+            this._extensions.push(windowSwitchingGestureExtension);
+        }
 
         /**
          * Pinch Gestures
@@ -197,8 +200,10 @@ export default class TouchpadGestureCustomization extends Extension {
         const showDesktopFingers = pinchToFingersMap.get(
             PinchGestureType.SHOW_DESKTOP
         );
-        if (showDesktopFingers?.length)
+
+        if (showDesktopFingers?.length) {
             this._extensions.push(new ShowDesktopExtension(showDesktopFingers));
+        }
 
         // pinch to close window
         const closeWindowFingers = pinchToFingersMap.get(
@@ -224,24 +229,6 @@ export default class TouchpadGestureCustomization extends Extension {
                 )
             );
 
-        /**
-         * Other Gestures
-         */
-        // // Control system volume with 3 finger gesture
-        // if (
-        //     !this.settings.get_boolean('enable-vertical-app-gesture') &&
-        //     this.settings.get_boolean('enable-volume-control-gesture')
-        // ) {
-        //     if (
-        //         !this.settings.get_boolean('enable-window-manipulation-gesture')
-        //     )
-        //         this._extensions.push(new VolumeControlGestureExtension());
-        // }
-
-        // TODO: allow user to choose whether to use 3 or 4 fingers swipe to control
-        // window tiling (given the feature need vertical swipe to activate)
-        // if user choose to use 3 fingers, 3 fingers vertical swipe should be set to none
-
         // TODO: consider having an option for 'hold and swipe gestures' that can either
         // be set to window tiling or app gesture (need to fix how to activate window tiling with
         // hold and swipe without being blocked by overview navigation)
@@ -260,6 +247,41 @@ export default class TouchpadGestureCustomization extends Extension {
             this._extensions.push(
                 new SnapWindowExtension(verticalWindowManipulationFingers)
             );
+
+        /**
+         * Volume Control
+         */
+
+        const verticalVolumeControlFingers = verticalSwipeToFingersMap.get(
+            SwipeGestureType.VOLUME_CONTROL
+        );
+        const horizontalVolumeControlFingers = horizontalSwipeToFingersMap.get(
+            SwipeGestureType.VOLUME_CONTROL
+        );
+
+        if (
+            verticalVolumeControlFingers?.length ||
+            horizontalVolumeControlFingers?.length
+        ) {
+            const volumeControlGestureExtension =
+                new VolumeControlGestureExtension();
+
+            // Enable vertical swipe for overview navigation
+            if (verticalVolumeControlFingers?.length) {
+                volumeControlGestureExtension.setVerticalSwipeTracker(
+                    verticalVolumeControlFingers
+                );
+            }
+
+            // Enable horizontal swipe for overview navigation
+            if (horizontalVolumeControlFingers?.length) {
+                volumeControlGestureExtension?.setHorizontalSwipeTracker(
+                    horizontalVolumeControlFingers
+                );
+            }
+
+            this._extensions.push(volumeControlGestureExtension);
+        }
 
         /**
          * App Gestures
