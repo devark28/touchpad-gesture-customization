@@ -28,7 +28,7 @@
 
                         <child>
                             <object class="GtkScale" id="touchpad-speed-scale">
-                                <property name="width-request">50</property>
+                                <property name="width-request">100</property>
                                 <property name="hexpand">true</property>
                                 <property name="draw-value">no</property>
                                 <!-- <signal name="value-changed" handler="touchpad_speed_changed" object="touchpadspeed_speed_display_value"/> -->
@@ -68,7 +68,7 @@
 
                         <child>
                             <object class="GtkScale" id="touchpad-pinch-speed">
-                                <property name="width-request">50</property>
+                                <property name="width-request">100</property>
                                 <property name="hexpand">true</property>
                                 <property name="draw-value">no</property>
                                 <!-- <signal name="value-changed" handler="touchpad_speed_changed" object="touchpadspeed_speed_display_value"/> -->
@@ -108,7 +108,7 @@
 
                         <child>
                             <object class="GtkScale" id="volume-control-speed">
-                                <property name="width-request">50</property>
+                                <property name="width-request">100</property>
                                 <property name="hexpand">true</property>
                                 <property name="draw-value">no</property>
                                 <property name="adjustment">
