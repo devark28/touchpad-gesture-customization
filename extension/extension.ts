@@ -22,6 +22,7 @@ import {SnapWindowExtension} from './src/snapWidnow.js';
 import {ShowDesktopExtension} from './src/pinchGestures/showDesktop.js';
 import {CloseWindowExtension} from './src/pinchGestures/closeWindow.js';
 import {VolumeControlGestureExtension} from './src/volumeControl.js';
+import {BrightnessControlGestureExtension} from './src/brightnessControl.js';
 
 export default class TouchpadGestureCustomization extends Extension {
     private _extensions: ISubExtension[];
@@ -39,6 +40,7 @@ export default class TouchpadGestureCustomization extends Extension {
             'alttab-delay',
             'touchpad-pinch-speed',
             'volume-control-speed',
+            'brightness-control-speed',
         ];
     }
 
@@ -285,6 +287,42 @@ export default class TouchpadGestureCustomization extends Extension {
         }
 
         /**
+         * Brightness Control
+         */
+
+        const verticalBrightnessControlFingers = verticalSwipeToFingersMap.get(
+            SwipeGestureType.BRIGHTNESS_CONTROL
+        );
+        const horizontalBrightnessControlFingers =
+            horizontalSwipeToFingersMap.get(
+                SwipeGestureType.BRIGHTNESS_CONTROL
+            );
+
+        if (
+            verticalBrightnessControlFingers?.length ||
+            horizontalBrightnessControlFingers?.length
+        ) {
+            const brightnessControlGestureExtension =
+                new BrightnessControlGestureExtension();
+
+            // Enable vertical swipe for overview navigation
+            if (verticalBrightnessControlFingers?.length) {
+                brightnessControlGestureExtension.setVerticalSwipeTracker(
+                    verticalBrightnessControlFingers
+                );
+            }
+
+            // Enable horizontal swipe for overview navigation
+            if (horizontalBrightnessControlFingers?.length) {
+                brightnessControlGestureExtension.setHorizontalSwipeTracker(
+                    horizontalBrightnessControlFingers
+                );
+            }
+
+            this._extensions.push(brightnessControlGestureExtension);
+        }
+
+        /**
          * App Gestures
          */
         if (this.settings.get_boolean('enable-forward-back-gesture')) {
@@ -384,6 +422,12 @@ export default class TouchpadGestureCustomization extends Extension {
                 this.settings.get_boolean('follow-natural-scroll');
             Constants.ExtSettings.DEFAULT_OVERVIEW_GESTURE_DIRECTION =
                 this.settings.get_boolean('default-overview-gesture-direction');
+            Constants.ExtSettings.INVERT_VOLUME_DIRECTION =
+                this.settings.get_boolean('invert-volume-gesture-direction');
+            Constants.ExtSettings.INVERT_BRIGHTNESS_DIRECTION =
+                this.settings.get_boolean(
+                    'invert-brightness-gesture-direction'
+                );
             Constants.ExtSettings.APP_GESTURES = this.settings.get_boolean(
                 'enable-forward-back-gesture'
             );
@@ -397,6 +441,10 @@ export default class TouchpadGestureCustomization extends Extension {
             Constants.TouchpadConstants.VOLUME_CONTROL_MULTIPLIER =
                 Constants.TouchpadConstants.DEFAULT_VOLUME_CONTROL_MULTIPLIER *
                 this.settings.get_double('volume-control-speed');
+            Constants.TouchpadConstants.BRIGHTNESS_CONTROL_MULTIPLIER =
+                Constants.TouchpadConstants
+                    .DEFAULT_BRIGHTNESS_CONTROL_MULTIPLIER *
+                this.settings.get_double('brightness-control-speed');
             Constants.AltTabConstants.DELAY_DURATION =
                 this.settings.get_int('alttab-delay');
             Constants.TouchpadConstants.HOLD_SWIPE_DELAY_DURATION =

@@ -17,7 +17,8 @@
     <value value='2' nick='WORKSPACE_SWITCHING' />
     <value value='3' nick='WINDOW_SWITCHING' />
     <value value='4' nick='VOLUME_CONTROL' />
-    <value value='5' nick='WINDOW_MANIPULATION' />
+    <value value='5' nick='BRIGHTNESS_CONTROL' />
+    <value value='6' nick='WINDOW_MANIPULATION' />
   </enum>
   <enum id='org.gnome.shell.extensions.touchpad-gesture-customization.horizontal-swipe-gestures'>
     <value value='0' nick='NONE' />
@@ -25,6 +26,7 @@
     <value value='2' nick='WORKSPACE_SWITCHING' />
     <value value='3' nick='WINDOW_SWITCHING' />
     <value value='4' nick='VOLUME_CONTROL' />
+    <value value='5' nick='BRIGHTNESS_CONTROL' />
   </enum>
   <schema id="org.gnome.shell.extensions.touchpad-gesture-customization" path="/org/gnome/shell/extensions/touchpad-gesture-customization/">
     <!-- See also: https://docs.gtk.org/glib/gvariant-format-strings.html -->
@@ -35,6 +37,9 @@
       <default>1.0</default>
     </key>
     <key name="volume-control-speed" type="d">
+      <default>1.0</default>
+    </key>
+    <key name="brightness-control-speed" type="d">
       <default>1.0</default>
     </key>
     <key name="alttab-delay" type="i">
@@ -54,6 +59,14 @@
     <key name='default-overview-gesture-direction' type='b'>
       <default>true</default>
       <description>Default direction for overview navigation</description>
+    </key>
+    <key name='invert-volume-gesture-direction' type='b'>
+      <default>true</default>
+      <description>Whether to invert volume control gesture direction</description>
+    </key>
+    <key name='invert-brightness-gesture-direction' type='b'>
+      <default>true</default>
+      <description>Whether to invert brightness control gesture direction</description>
     </key>
     <key name='enable-forward-back-gesture' type='b'>
       <default>false</default>
@@ -91,7 +104,7 @@
       <default>'WINDOW_PICKER_ONLY'</default>
       <description>Customization for overview and app-grid navigation using vertical swipe</description>
     </key>
-    <!-- 
+    <!--
       0 -> Default
       1 -> Forward/Back
       2 -> PageUP/PageDown

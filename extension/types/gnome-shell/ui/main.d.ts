@@ -66,7 +66,7 @@ declare module 'resource:///org/gnome/shell/ui/main.js' {
         show(
             monitor: number,
             icon: Gio.Icon,
-            label: string,
+            label: string | null,
             percentage: number
         ): void;
         hideAll(): void;

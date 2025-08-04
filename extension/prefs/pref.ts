@@ -127,6 +127,12 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
         settings,
         builder
     );
+    display_in_log_scale(
+        'brightness-control-speed',
+        'brightness-control-speed_display-value',
+        settings,
+        builder
+    );
 
     bind_int_value('alttab-delay', settings, builder);
     bind_int_value('hold-swipe-delay-duration', settings, builder);
@@ -137,6 +143,12 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
         settings,
         builder,
         Gio.SettingsBindFlags.INVERT_BOOLEAN
+    );
+    bind_boolean_value('invert-volume-gesture-direction', settings, builder);
+    bind_boolean_value(
+        'invert-brightness-gesture-direction',
+        settings,
+        builder
     );
     bind_boolean_value('enable-vertical-app-gesture', settings, builder);
 

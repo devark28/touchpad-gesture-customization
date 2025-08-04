@@ -4,7 +4,7 @@ import St from 'gi://St';
 import GObject from 'gi://GObject';
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 import {easeActor} from '../utils/environment.js';
-import {WIGET_SHOWING_DURATION} from '../../constants.js';
+import {WIDGET_SHOWING_DURATION} from '../../constants.js';
 
 declare type IconList =
     | 'arrow1-right-symbolic.svg'
@@ -103,7 +103,7 @@ export const ArrowIconAnimation = GObject.registerClass(
             easeActor(this as St.Widget, {
                 opacity: 255,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                duration: WIGET_SHOWING_DURATION,
+                duration: WIDGET_SHOWING_DURATION,
             });
 
             this._arrow_icon.set_gicon(

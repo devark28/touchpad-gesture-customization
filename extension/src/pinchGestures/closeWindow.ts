@@ -5,7 +5,7 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 import {PinchGestureType} from '../../common/settings.js';
-import {WIGET_SHOWING_DURATION} from '../../constants.js';
+import {WIDGET_SHOWING_DURATION} from '../../constants.js';
 import {TouchpadPinchGesture} from './pinchTracker.js';
 import {easeActor} from '../utils/environment.js';
 import {getVirtualKeyboard, IVirtualKeyboard} from '../utils/keyboard.js';
@@ -87,7 +87,7 @@ export class CloseWindowExtension implements ISubExtension {
         easeActor(this._preview, {
             opacity: 255,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-            duration: WIGET_SHOWING_DURATION,
+            duration: WIDGET_SHOWING_DURATION,
         });
     }
 
