@@ -1,38 +1,46 @@
 import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
+import Gio from 'gi://Gio';
+import Gvc from 'gi://Gvc';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
 import {SwipeTracker} from 'resource:///org/gnome/shell/ui/swipeTracker.js';
 import {createSwipeTracker} from './swipeTracker.js';
-import {getVirtualKeyboard, IVirtualKeyboard} from './utils/keyboard.js';
 import {TouchpadConstants} from '../constants.js';
 
-enum VolumeGestureState {
-    VOLUME_UP = 1,
-    DEFAULT = 0,
-    VOLUME_DOWN = -1,
-}
+const VolumeIcons = [
+    'audio-volume-muted-symbolic',
+    'audio-volume-low-symbolic',
+    'audio-volume-medium-symbolic',
+    'audio-volume-high-symbolic',
+];
 
 export class VolumeControlGestureExtension implements ISubExtension {
     private _verticalSwipeTracker?: SwipeTracker;
     private _horizontalSwipeTracker?: SwipeTracker;
     private _verticalConnectHandlers?: number[];
     private _horizontalConnectHandlers?: number[];
-    private _keyboard: IVirtualKeyboard;
-    private _volumeGestureState: VolumeGestureState;
-    private _progress = 0;
-
-    constructor() {
-        this._keyboard = getVirtualKeyboard();
-        this._progress = 0;
-        this._volumeGestureState = VolumeGestureState.DEFAULT;
-    }
+    private _controller!: Gvc.MixerControl;
+    private _sink!: Gvc.MixerStream;
+    private _maxVolume!: number;
+    private _sinkChangeBinding!: number;
+    private _lastOsdShowTimestamp: number = 0;
 
     apply() {
-        this._keyboard = getVirtualKeyboard();
-        this._progress = 0;
-        this._volumeGestureState = VolumeGestureState.DEFAULT;
+        this._controller = Volume.getMixerControl();
+
+        this._maxVolume = this._controller.get_vol_max_norm();
+
+        this._sink = this._controller.get_default_sink();
+        this._sinkChangeBinding = this._controller.connect(
+            'default-sink-changed',
+            this._handle_sink_change.bind(this)
+        );
     }
 
     destroy(): void {
+        this._controller.disconnect(this._sinkChangeBinding);
+
         this._verticalConnectHandlers?.forEach(handle =>
             this._verticalSwipeTracker?.disconnect(handle)
         );
@@ -44,8 +52,6 @@ export class VolumeControlGestureExtension implements ISubExtension {
         );
         this._horizontalConnectHandlers = undefined;
         this._horizontalSwipeTracker?.destroy();
-
-        this._progress = 0;
     }
 
     setVerticalSwipeTracker(nfingers: number[]) {
@@ -82,7 +88,7 @@ export class VolumeControlGestureExtension implements ISubExtension {
             Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
             Clutter.Orientation.HORIZONTAL,
             true,
-            1,
+            TouchpadConstants.VOLUME_CONTROL_MULTIPLIER,
             {allowTouch: false}
         );
 
@@ -102,53 +108,56 @@ export class VolumeControlGestureExtension implements ISubExtension {
         ];
     }
 
+    _handle_sink_change(controller: Gvc.MixerControl, id: number) {
+        this._sink = controller.lookup_stream_id(id);
+    }
+
+    _show_osd(volume: number) {
+        // If osd is updated too frequently, it may lag or freeze, so cap it to 30 fps
+        const nowTimestamp = new Date().getTime();
+
+        if (nowTimestamp - this._lastOsdShowTimestamp < 1000 / 30) {
+            return;
+        }
+
+        this._lastOsdShowTimestamp = nowTimestamp;
+
+        const percentage = volume / this._maxVolume;
+        const iconIndex =
+            volume === 0 ? 0 : Math.clamp(Math.floor(3 * percentage + 1), 1, 3);
+
+        const monitor = -1; // Display volume window on all monitors
+        const icon = Gio.Icon.new_for_string(VolumeIcons[iconIndex]);
+        const label = this._sink.get_port().human_port;
+
+        Main.osdWindowManager.show(monitor, icon, label, percentage);
+    }
+
     _gestureBegin(_tracker: SwipeTracker): void {
-        this._volumeGestureState = VolumeGestureState.DEFAULT;
         _tracker.confirmSwipe(
             global.screen_height,
-            [
-                VolumeGestureState.VOLUME_DOWN,
-                VolumeGestureState.DEFAULT,
-                VolumeGestureState.VOLUME_UP,
-            ],
-            VolumeGestureState.DEFAULT,
-            VolumeGestureState.DEFAULT
+            [0, 1], // no snapping is needed as volume change is continuous, but this will automatically clamp progress to [0, 1]
+            this._sink.volume / this._maxVolume, // current normalized volume
+            0 // can be whatever
         );
     }
 
     _gestureUpdate(_tracker: SwipeTracker, progress: number): void {
-        this._progress = Math.clamp(
-            progress,
-            VolumeGestureState.VOLUME_DOWN,
-            VolumeGestureState.VOLUME_UP
-        );
+        const volume = progress * this._maxVolume;
 
-        switch (this._volumeGestureState) {
-            case VolumeGestureState.DEFAULT:
-                if (this._progress > VolumeGestureState.DEFAULT) {
-                    this._volumeGestureState = VolumeGestureState.VOLUME_UP;
-                }
-
-                if (this._progress < VolumeGestureState.DEFAULT) {
-                    this._volumeGestureState = VolumeGestureState.VOLUME_DOWN;
-                }
-
-                break;
-            case VolumeGestureState.VOLUME_UP:
-                this._keyboard.sendKeys([Clutter.KEY_AudioRaiseVolume]);
-                this._volumeGestureState = VolumeGestureState.DEFAULT;
-                break;
-            case VolumeGestureState.VOLUME_DOWN:
-                this._keyboard.sendKeys([Clutter.KEY_AudioLowerVolume]);
-                this._volumeGestureState = VolumeGestureState.DEFAULT;
+        if (volume > 0) {
+            this._sink.change_is_muted(false);
         }
+
+        this._sink.volume = volume;
+        this._sink.push_volume();
+
+        this._show_osd(volume);
     }
 
     _gestureEnd(
         _tracker: SwipeTracker,
         duration: number,
-        progress: VolumeGestureState
-    ): void {
-        this._volumeGestureState = VolumeGestureState.DEFAULT;
-    }
+        progress: number
+    ): void {}
 }

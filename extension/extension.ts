@@ -276,7 +276,7 @@ export default class TouchpadGestureCustomization extends Extension {
 
             // Enable horizontal swipe for overview navigation
             if (horizontalVolumeControlFingers?.length) {
-                volumeControlGestureExtension?.setHorizontalSwipeTracker(
+                volumeControlGestureExtension.setHorizontalSwipeTracker(
                     horizontalVolumeControlFingers
                 );
             }
