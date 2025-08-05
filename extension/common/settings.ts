@@ -14,7 +14,8 @@ export enum SwipeGestureType {
     WORKSPACE_SWITCHING = 2,
     WINDOW_SWITCHING = 3,
     VOLUME_CONTROL = 4,
-    WINDOW_MANIPULATION = 5,
+    BRIGHTNESS_CONTROL = 5,
+    WINDOW_MANIPULATION = 6,
 }
 
 export enum OverviewNavigationState {
@@ -35,6 +36,8 @@ export enum ForwardBackKeyBinds {
 export type BooleanSettingsKeys =
     | 'allow-minimize-window'
     | 'follow-natural-scroll'
+    | 'invert-volume-gesture-direction'
+    | 'invert-brightness-gesture-direction'
     | 'enable-forward-back-gesture'
     | 'default-overview-gesture-direction'
     | 'enable-vertical-app-gesture';
@@ -44,7 +47,8 @@ export type IntegerSettingsKeys = 'alttab-delay' | 'hold-swipe-delay-duration';
 export type DoubleSettingsKeys =
     | 'touchpad-speed-scale'
     | 'touchpad-pinch-speed'
-    | 'volume-control-speed';
+    | 'volume-control-speed'
+    | 'brightness-control-speed';
 
 export type EnumSettingsKeys =
     | 'vertical-swipe-3-fingers-gesture'
@@ -71,7 +75,8 @@ export type AllUIObjectKeys =
     | AllSettingsKeys
     | 'touchpad-speed-scale_display-value'
     | 'touchpad-pinch-speed_display-value'
-    | 'volume-control-speed_display-value';
+    | 'volume-control-speed_display-value'
+    | 'brightness-control-speed_display-value';
 
 type Enum_Functions<K extends EnumSettingsKeys, T> = {
     get_enum(key: K): T;

@@ -19,6 +19,7 @@
             <item translatable="yes">Workspace Switching</item>
             <item translatable="yes">Window Switching</item>
             <item translatable="yes">Volume Control</item>
+            <item translatable="yes">Brightness Control</item>
             <item translatable="yes">Window Manipulation</item>
         </items>
     </object>
@@ -30,6 +31,7 @@
             <item translatable="yes">Workspace Switching</item>
             <item translatable="yes">Window Switching</item>
             <item translatable="yes">Volume Control</item>
+            <item translatable="yes">Brightness Control</item>
         </items>
     </object>
 
@@ -57,7 +59,7 @@
                         <property name="model">horizontal_swipe_gestures_model</property>
                     </object>
                 </child>
-            
+
             </object>
         </child>
 
@@ -81,7 +83,7 @@
                         <property name="model">horizontal_swipe_gestures_model</property>
                     </object>
                 </child>
-            
+
             </object>
         </child>
 

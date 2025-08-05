@@ -3,6 +3,7 @@ declare module 'resource:///org/gnome/shell/ui/main.js' {
     import Clutter from 'gi://Clutter';
     import St from 'gi://St';
     import Shell from 'gi://Shell';
+    import Gio from 'gi://Gio';
 
     import {ControlsManager} from 'resource:///org/gnome/shell/ui/overviewControls.js';
     import {SwipeTracker} from 'resource:///org/gnome/shell/ui/swipeTracker.js';
@@ -62,6 +63,12 @@ declare module 'resource:///org/gnome/shell/ui/main.js' {
     };
 
     const osdWindowManager: {
+        show(
+            monitor: number,
+            icon: Gio.Icon,
+            label: string | null,
+            percentage: number
+        ): void;
         hideAll(): void;
     };
 }

@@ -9,6 +9,8 @@ export const TouchpadConstants = {
     PINCH_MULTIPLIER: 1,
     DEFAULT_VOLUME_CONTROL_MULTIPLIER: 1,
     VOLUME_CONTROL_MULTIPLIER: 1,
+    DEFAULT_BRIGHTNESS_CONTROL_MULTIPLIER: 1,
+    BRIGHTNESS_CONTROL_MULTIPLIER: 1,
     DRAG_THRESHOLD_DISTANCE: 16,
     TOUCHPAD_BASE_HEIGHT: 300,
     TOUCHPAD_BASE_WIDTH: 400,
@@ -36,7 +38,9 @@ export const ExtSettings = {
     FOLLOW_NATURAL_SCROLL: true,
     APP_GESTURES: false,
     DEFAULT_OVERVIEW_GESTURE_DIRECTION: true,
+    INVERT_VOLUME_DIRECTION: false,
+    INVERT_BRIGHTNESS_DIRECTION: false,
 };
 
 export const RELOAD_DELAY = 150; // reload extension delay in ms
-export const WIGET_SHOWING_DURATION = 100; // animation duration for showing widget
+export const WIDGET_SHOWING_DURATION = 100; // animation duration for showing widget
