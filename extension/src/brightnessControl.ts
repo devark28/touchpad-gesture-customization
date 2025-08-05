@@ -152,8 +152,10 @@ export class BrightnessControlGestureExtension implements ISubExtension {
     }
 
     _gestureUpdate(_tracker: SwipeTracker, progress: number): void {
-        this._brightness = progress;
-        this._showOsd(progress);
+        // Round instead of truncating so that brightness changes sync exactly with extensions like "OSD Volume Number"
+        const brightness = Math.round(progress);
+        this._brightness = brightness;
+        this._showOsd(brightness);
     }
 
     _gestureEnd(
