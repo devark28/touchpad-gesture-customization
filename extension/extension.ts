@@ -23,6 +23,7 @@ import {ShowDesktopExtension} from './src/pinchGestures/showDesktop.js';
 import {CloseWindowExtension} from './src/pinchGestures/closeWindow.js';
 import {VolumeControlGestureExtension} from './src/volumeControl.js';
 import {BrightnessControlGestureExtension} from './src/brightnessControl.js';
+import {MediaControlGestureExtension} from './src/mediaControl.js';
 
 export default class TouchpadGestureCustomization extends Extension {
     private _extensions: ISubExtension[];
@@ -284,6 +285,25 @@ export default class TouchpadGestureCustomization extends Extension {
             }
 
             this._extensions.push(volumeControlGestureExtension);
+        }
+
+        /**
+         * Media Control (Next/Previous track)
+         */
+
+        const horizontalMediaControlFingers = horizontalSwipeToFingersMap.get(
+            SwipeGestureType.MEDIA_CONTROL
+        );
+
+        if (horizontalMediaControlFingers?.length) {
+            const mediaControlGestureExtension =
+                new MediaControlGestureExtension();
+
+            mediaControlGestureExtension.setHorizontalSwipeTracker(
+                horizontalMediaControlFingers
+            );
+
+            this._extensions.push(mediaControlGestureExtension);
         }
 
         /**
