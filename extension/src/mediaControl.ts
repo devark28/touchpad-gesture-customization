@@ -1,6 +1,9 @@
 import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
-import {SwipeTracker} from 'resource:///org/gnome/shell/ui/swipeTracker.js';
+import {
+    CustomEventType,
+    SwipeTracker,
+} from 'resource:///org/gnome/shell/ui/swipeTracker.js';
 import {createSwipeTracker} from './swipeTracker.js';
 import Gio from 'gi://Gio';
 import {ExtSettings, TouchpadConstants} from '../constants.js';
@@ -18,9 +21,13 @@ export class MediaControlGestureExtension implements ISubExtension {
     private _verticalSwipeTracker?: SwipeTracker;
     private _horizontalConnectHandlers?: number[];
     private _verticalConnectHandlers?: number[];
+    private _holdGestureBeginTime?: number;
+    private _stageHoldHandler?: number;
 
     apply() {
         console.log('[TGC MediaControl] Extension applied');
+
+        if (!this._stageHoldHandler) this._connectHoldListenerOnce();
     }
 
     destroy(): void {
@@ -33,6 +40,11 @@ export class MediaControlGestureExtension implements ISubExtension {
         this._horizontalConnectHandlers = undefined;
         this._horizontalSwipeTracker?.destroy();
         this._verticalSwipeTracker?.destroy();
+
+        if (this._stageHoldHandler) {
+            global.stage.disconnect(this._stageHoldHandler);
+            this._stageHoldHandler = undefined;
+        }
     }
 
     setHorizontalSwipeTracker(nfingers: number[]) {
@@ -131,7 +143,7 @@ export class MediaControlGestureExtension implements ISubExtension {
         }
     }
 
-    private _callMpris(method: 'Next' | 'Previous') {
+    private _callMpris(method: 'Next' | 'Previous' | 'PlayPause' | 'Stop') {
         console.log(
             `[TGC MediaControl] _callMpris called with method: ${method}`
         );
@@ -222,23 +234,53 @@ export class MediaControlGestureExtension implements ISubExtension {
         }
     }
 
-    /*
     // TODO: experiment with short time hold as a tap gesture
     _handleHoldEvent(event: CustomEventType): void {
         const phase = event.get_gesture_phase();
         const fingerCount = event.get_touchpad_gesture_finger_count();
+        console.log(
+            '[TGC MediaControl] Hold gesture event: ',
+            phase,
+            ' ',
+            fingerCount,
+            ' ',
+            event.type()
+        );
 
         if (phase === Clutter.TouchpadGesturePhase.BEGIN) {
             this._holdGestureBeginTime = event.get_time();
-        }
-        else if (phase === Clutter.TouchpadGesturePhase.END) {
+        } else if (phase === Clutter.TouchpadGesturePhase.END) {
+            console.log('[TGC MediaControl] Hold gesture end');
+
+            if (this._holdGestureBeginTime === undefined) {
+                console.log(
+                    '[TGC MediaControl] Hold gesture end without begin time'
+                );
+                return;
+            }
+
             const duration = event.get_time() - this._holdGestureBeginTime;
+            console.log('[TGC MediaControl] Hold gesture duration: ', duration);
 
             // If hold was very brief (<200ms) and 4 fingers, treat as tap
             if (duration < 200 && fingerCount === 4) {
-                // Trigger your tap action here
-                this.emit('tap', fingerCount);
+                console.log('[TGC MediaControl] Hold gesture detected as tap');
+                this._callMpris('PlayPause');
             }
         }
-    }*/
+    }
+
+    private _connectHoldListenerOnce() {
+        if (this._stageHoldHandler) return;
+        console.log('[TGC MediaControl] Connecting hold listener');
+        this._stageHoldHandler = global.stage.connect(
+            'captured-event::touchpad',
+            (_actor, event: CustomEventType) => {
+                if (event.type() === Clutter.EventType.TOUCHPAD_HOLD)
+                    this._handleHoldEvent(event);
+                return Clutter.EVENT_PROPAGATE;
+            }
+        );
+        console.log('[TGC MediaControl] Hold listener connected');
+    }
 }

@@ -292,7 +292,7 @@ export default class TouchpadGestureCustomization extends Extension {
          */
 
         const verticalMediaControlFingers = verticalSwipeToFingersMap.get(
-            SwipeGestureType.VOLUME_CONTROL
+            SwipeGestureType.MEDIA_CONTROL
         );
         const horizontalMediaControlFingers = horizontalSwipeToFingersMap.get(
             SwipeGestureType.MEDIA_CONTROL
