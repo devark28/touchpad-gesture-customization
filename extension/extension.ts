@@ -12,7 +12,7 @@ import {
 import * as Constants from './constants.js';
 import {OverviewRoundTripGestureExtension} from './src/overviewRoundTrip.js';
 import {GestureExtension} from './src/gestures.js';
-import AltTabGestureExtension from './src/altTab.js';
+import {WindowSwitchingGestureExtension} from './src/windowSwitching.js';
 import {
     ForwardBackGestureExtension,
     type AppForwardBackKeyBinds,
@@ -176,9 +176,8 @@ export default class TouchpadGestureCustomization extends Extension {
             verticalWindowSwitchingFingers?.length ||
             horizontalWindowSwitchingFingers?.length
         ) {
-            // TODO: update class name to WindowSwitchingGestureExtension
             const windowSwitchingGestureExtension =
-                new AltTabGestureExtension();
+                new WindowSwitchingGestureExtension();
 
             // Enable vertical swipe for window switching
             if (verticalWindowSwitchingFingers?.length)

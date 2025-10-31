@@ -38,7 +38,7 @@ enum AltTabExtState {
     ALTTAB = 3,
 }
 
-export default class AltTabGestureExtension implements ISubExtension {
+export class WindowSwitchingGestureExtension implements ISubExtension {
     private _verticalTouchpadSwipeTracker?: typeof TouchpadSwipeGesture.prototype;
     private _horizontalTouchpadSwipeTracker?: typeof TouchpadSwipeGesture.prototype;
     private _verticalConnectHandlers?: number[];

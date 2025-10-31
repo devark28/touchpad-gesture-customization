@@ -43,6 +43,7 @@ gnome-extensions enable touchpad-gesture-customization@coooolapps.com
 | Minimize a window                       | Desktop  | 3/4/both | Vertical            |
 | Snap/half-tile a window                 | Desktop  | 3/4/both | Vertical (\*)       |
 | Volume Control                          | Desktop  | 3/4/both | Vertical/Horizontal |
+| Media Control (Next/Previous track)     | Desktop  | 3/4/both | Vertical/Horizontal |
 | Brightness Control                      | Desktop  | 3/4/both | Vertical/Horizontal |
 
 | Pinch Gesture      | Modes   | Fingers |
@@ -75,6 +76,12 @@ gnome-extensions enable touchpad-gesture-customization@coooolapps.com
 
 - For horizontal gestures, application gesture only works if 3/4-fingers horizontal swipe is set to **Window Switching**
 - Application gesture also supports vertical swipe but is still experimental and requires users to turn off other actions for 3/4-figners vertical swipe (i.e. set the action to None).
+
+#### Media Control Notes
+
+- Media control works with any application that supports the MPRIS D-Bus interface (most Linux media players do: Spotify, Firefox, Chrome, VLC, etc.)
+- No additional dependencies required - the extension communicates directly with media players via D-Bus
+- If multiple players are running, the extension prioritizes the one currently playing
 
 #### Notes
 
