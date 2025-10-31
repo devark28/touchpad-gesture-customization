@@ -38,6 +38,7 @@ export type BooleanSettingsKeys =
     | 'allow-minimize-window'
     | 'follow-natural-scroll'
     | 'invert-volume-gesture-direction'
+    | 'invert-media-gesture-direction'
     | 'invert-brightness-gesture-direction'
     | 'enable-forward-back-gesture'
     | 'default-overview-gesture-direction'

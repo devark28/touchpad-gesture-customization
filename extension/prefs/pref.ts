@@ -151,6 +151,7 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
         Gio.SettingsBindFlags.INVERT_BOOLEAN
     );
     bind_boolean_value('invert-volume-gesture-direction', settings, builder);
+    bind_boolean_value('invert-media-gesture-direction', settings, builder);
     bind_boolean_value(
         'invert-brightness-gesture-direction',
         settings,
