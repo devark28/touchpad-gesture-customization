@@ -41,6 +41,7 @@ export default class TouchpadGestureCustomization extends Extension {
             'alttab-delay',
             'touchpad-pinch-speed',
             'volume-control-speed',
+            'media-control-speed',
             'brightness-control-speed',
         ];
     }
@@ -291,17 +292,33 @@ export default class TouchpadGestureCustomization extends Extension {
          * Media Control (Next/Previous track)
          */
 
+        const verticalMediaControlFingers = verticalSwipeToFingersMap.get(
+            SwipeGestureType.VOLUME_CONTROL
+        );
         const horizontalMediaControlFingers = horizontalSwipeToFingersMap.get(
             SwipeGestureType.MEDIA_CONTROL
         );
 
-        if (horizontalMediaControlFingers?.length) {
+        if (
+            verticalMediaControlFingers?.length ||
+            horizontalMediaControlFingers?.length
+        ) {
             const mediaControlGestureExtension =
                 new MediaControlGestureExtension();
 
-            mediaControlGestureExtension.setHorizontalSwipeTracker(
-                horizontalMediaControlFingers
-            );
+            // Enable vertical swipe for overview navigation
+            if (verticalMediaControlFingers?.length) {
+                mediaControlGestureExtension.setVerticalSwipeTracker(
+                    verticalMediaControlFingers
+                );
+            }
+
+            // Enable horizontal swipe for overview navigation
+            if (horizontalMediaControlFingers?.length) {
+                mediaControlGestureExtension.setHorizontalSwipeTracker(
+                    horizontalMediaControlFingers
+                );
+            }
 
             this._extensions.push(mediaControlGestureExtension);
         }
@@ -444,6 +461,8 @@ export default class TouchpadGestureCustomization extends Extension {
                 this.settings.get_boolean('default-overview-gesture-direction');
             Constants.ExtSettings.INVERT_VOLUME_DIRECTION =
                 this.settings.get_boolean('invert-volume-gesture-direction');
+            Constants.ExtSettings.INVERT_MEDIA_DIRECTION =
+                this.settings.get_boolean('invert-media-gesture-direction');
             Constants.ExtSettings.INVERT_BRIGHTNESS_DIRECTION =
                 this.settings.get_boolean(
                     'invert-brightness-gesture-direction'
@@ -461,6 +480,9 @@ export default class TouchpadGestureCustomization extends Extension {
             Constants.TouchpadConstants.VOLUME_CONTROL_MULTIPLIER =
                 Constants.TouchpadConstants.DEFAULT_VOLUME_CONTROL_MULTIPLIER *
                 this.settings.get_double('volume-control-speed');
+            Constants.TouchpadConstants.MEDIA_CONTROL_MULTIPLIER =
+                Constants.TouchpadConstants.DEFAULT_MEDIA_CONTROL_MULTIPLIER *
+                this.settings.get_double('media-control-speed');
             Constants.TouchpadConstants.BRIGHTNESS_CONTROL_MULTIPLIER =
                 Constants.TouchpadConstants
                     .DEFAULT_BRIGHTNESS_CONTROL_MULTIPLIER *

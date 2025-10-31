@@ -27,6 +27,7 @@
     <value value='3' nick='WINDOW_SWITCHING' />
     <value value='4' nick='VOLUME_CONTROL' />
     <value value='5' nick='BRIGHTNESS_CONTROL' />
+    <value value='6' nick='WINDOW_MANIPULATION' />
     <value value='7' nick='MEDIA_CONTROL' />
   </enum>
   <schema id="org.gnome.shell.extensions.touchpad-gesture-customization" path="/org/gnome/shell/extensions/touchpad-gesture-customization/">
@@ -38,6 +39,9 @@
       <default>1.0</default>
     </key>
     <key name="volume-control-speed" type="d">
+      <default>1.0</default>
+    </key>
+    <key name="media-control-speed" type="d">
       <default>1.0</default>
     </key>
     <key name="brightness-control-speed" type="d">

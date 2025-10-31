@@ -49,6 +49,7 @@ export type DoubleSettingsKeys =
     | 'touchpad-speed-scale'
     | 'touchpad-pinch-speed'
     | 'volume-control-speed'
+    | 'media-control-speed'
     | 'brightness-control-speed';
 
 export type EnumSettingsKeys =
@@ -77,6 +78,7 @@ export type AllUIObjectKeys =
     | 'touchpad-speed-scale_display-value'
     | 'touchpad-pinch-speed_display-value'
     | 'volume-control-speed_display-value'
+    | 'media-control-speed_display-value'
     | 'brightness-control-speed_display-value';
 
 type Enum_Functions<K extends EnumSettingsKeys, T> = {

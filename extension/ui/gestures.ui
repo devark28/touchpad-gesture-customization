@@ -21,6 +21,7 @@
             <item translatable="yes">Volume Control</item>
             <item translatable="yes">Brightness Control</item>
             <item translatable="yes">Window Manipulation</item>
+            <item translatable="yes">Media Control</item>
         </items>
     </object>
 
@@ -32,6 +33,7 @@
             <item translatable="yes">Window Switching</item>
             <item translatable="yes">Volume Control</item>
             <item translatable="yes">Brightness Control</item>
+            <item translatable="yes">Window Manipulation</item>
             <item translatable="yes">Media Control</item>
         </items>
     </object>

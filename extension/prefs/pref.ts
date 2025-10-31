@@ -128,6 +128,12 @@ function bindPrefsSettings(builder: GtkBuilder, settings: Gio.Settings) {
         builder
     );
     display_in_log_scale(
+        'media-control-speed',
+        'media-control-speed_display-value',
+        settings,
+        builder
+    );
+    display_in_log_scale(
         'brightness-control-speed',
         'brightness-control-speed_display-value',
         settings,
