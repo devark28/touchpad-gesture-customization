@@ -69,6 +69,10 @@
       <default>true</default>
       <description>Whether to invert volume control gesture direction</description>
     </key>
+      <key name='invert-media-gesture-direction' type='b'>
+      <default>false</default>
+      <description>Whether to invert media control gesture direction</description>
+    </key>
     <key name='invert-brightness-gesture-direction' type='b'>
       <default>true</default>
       <description>Whether to invert brightness control gesture direction</description>
