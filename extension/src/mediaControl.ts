@@ -221,4 +221,24 @@ export class MediaControlGestureExtension implements ISubExtension {
             console.log(`[TGC MediaControl] MPRIS ${method} failed: ${e}`);
         }
     }
+
+    /*
+    // TODO: experiment with short time hold as a tap gesture
+    _handleHoldEvent(event: CustomEventType): void {
+        const phase = event.get_gesture_phase();
+        const fingerCount = event.get_touchpad_gesture_finger_count();
+
+        if (phase === Clutter.TouchpadGesturePhase.BEGIN) {
+            this._holdGestureBeginTime = event.get_time();
+        }
+        else if (phase === Clutter.TouchpadGesturePhase.END) {
+            const duration = event.get_time() - this._holdGestureBeginTime;
+
+            // If hold was very brief (<200ms) and 4 fingers, treat as tap
+            if (duration < 200 && fingerCount === 4) {
+                // Trigger your tap action here
+                this.emit('tap', fingerCount);
+            }
+        }
+    }*/
 }
