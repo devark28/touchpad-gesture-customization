@@ -110,6 +110,8 @@ export const TouchpadSwipeGesture = GObject.registerClass(
             _actor: undefined | Clutter.Actor,
             event: CustomEventType
         ): boolean {
+            // TODO: apparently this will not work because focused windows consume the hold event
+            //  and the global stage will not be able to capture it.
             if (event.type() === Clutter.EventType.TOUCHPAD_HOLD) {
                 this._handleHoldEvent(event);
                 return Clutter.EVENT_PROPAGATE;

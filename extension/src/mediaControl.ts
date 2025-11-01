@@ -1,9 +1,6 @@
 import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
-import {
-    CustomEventType,
-    SwipeTracker,
-} from 'resource:///org/gnome/shell/ui/swipeTracker.js';
+import {SwipeTracker} from 'resource:///org/gnome/shell/ui/swipeTracker.js';
 import {createSwipeTracker} from './swipeTracker.js';
 import Gio from 'gi://Gio';
 import {ExtSettings, TouchpadConstants} from '../constants.js';
@@ -16,18 +13,25 @@ enum AnimationState {
 
 const SnapPointThreshold = 0.1;
 
+// Track swipe direction changes for pause/play detection
+interface DirectionChange {
+    timestamp: number;
+    direction: 'left' | 'right' | 'up' | 'down';
+    progress: number;
+}
+
 export class MediaControlGestureExtension implements ISubExtension {
     private _horizontalSwipeTracker?: SwipeTracker;
     private _verticalSwipeTracker?: SwipeTracker;
     private _horizontalConnectHandlers?: number[];
     private _verticalConnectHandlers?: number[];
-    private _holdGestureBeginTime?: number;
-    private _stageHoldHandler?: number;
+    private _directionHistory: DirectionChange[] = []; // Direction reversal tracking
+    private _lastProgress: number = 0;
+    private _gestureStartTime: number = 0;
+    private _currentOrientation?: Clutter.Orientation;
 
     apply() {
         console.log('[TGC MediaControl] Extension applied');
-
-        if (!this._stageHoldHandler) this._connectHoldListenerOnce();
     }
 
     destroy(): void {
@@ -40,11 +44,6 @@ export class MediaControlGestureExtension implements ISubExtension {
         this._horizontalConnectHandlers = undefined;
         this._horizontalSwipeTracker?.destroy();
         this._verticalSwipeTracker?.destroy();
-
-        if (this._stageHoldHandler) {
-            global.stage.disconnect(this._stageHoldHandler);
-            this._stageHoldHandler = undefined;
-        }
     }
 
     setHorizontalSwipeTracker(nfingers: number[]) {
@@ -65,7 +64,11 @@ export class MediaControlGestureExtension implements ISubExtension {
         this._horizontalConnectHandlers = [
             this._horizontalSwipeTracker.connect(
                 'begin',
-                this._gestureBegin.bind(this)
+                this._gestureBegin.bind(this, Clutter.Orientation.HORIZONTAL)
+            ),
+            this._horizontalSwipeTracker.connect(
+                'update',
+                this._gestureUpdate.bind(this)
             ),
             this._horizontalSwipeTracker.connect(
                 'end',
@@ -92,7 +95,11 @@ export class MediaControlGestureExtension implements ISubExtension {
         this._verticalConnectHandlers = [
             this._verticalSwipeTracker.connect(
                 'begin',
-                this._gestureBegin.bind(this)
+                this._gestureBegin.bind(this, Clutter.Orientation.VERTICAL)
+            ),
+            this._verticalSwipeTracker.connect(
+                'update',
+                this._gestureUpdate.bind(this)
             ),
             this._verticalSwipeTracker.connect(
                 'end',
@@ -101,8 +108,18 @@ export class MediaControlGestureExtension implements ISubExtension {
         ];
     }
 
-    _gestureBegin(tracker: SwipeTracker): void {
+    // Track gesture beginning and reset direction history
+    _gestureBegin(
+        orientation: Clutter.Orientation | null,
+        tracker: SwipeTracker
+    ): void {
         console.log('[TGC MediaControl] Gesture BEGIN');
+
+        this._currentOrientation = orientation ?? undefined;
+        this._directionHistory = [];
+        this._lastProgress = AnimationState.DEFAULT;
+        this._gestureStartTime = Date.now();
+
         tracker.confirmSwipe(
             global.screen_width,
             [AnimationState.LEFT, AnimationState.DEFAULT, AnimationState.RIGHT],
@@ -111,12 +128,72 @@ export class MediaControlGestureExtension implements ISubExtension {
         );
     }
 
+    // Track direction changes during gesture
+    _gestureUpdate(_tracker: SwipeTracker, progress: number): void {
+        const now = Date.now();
+        const progressDelta = progress - this._lastProgress;
+
+        // Detect significant direction change (threshold to avoid noise)
+        if (Math.abs(progressDelta) > 0.05) {
+            let direction: 'left' | 'right' | 'up' | 'down';
+
+            if (this._currentOrientation === Clutter.Orientation.HORIZONTAL) {
+                direction = progressDelta > 0 ? 'right' : 'left';
+            } else {
+                direction = progressDelta > 0 ? 'down' : 'up';
+            }
+
+            // Check if direction reversed from last recorded direction
+            const lastDirection =
+                this._directionHistory[this._directionHistory.length - 1];
+
+            if (
+                !lastDirection ||
+                this._isOppositeDirection(lastDirection.direction, direction)
+            ) {
+                this._directionHistory.push({
+                    timestamp: now,
+                    direction,
+                    progress,
+                });
+
+                console.log(
+                    `[TGC MediaControl] Direction change: ${direction}, history length: ${this._directionHistory.length}`
+                );
+            }
+        }
+
+        this._lastProgress = progress;
+    }
+
+    // Helper to detect opposite directions
+    private _isOppositeDirection(dir1: string, dir2: string): boolean {
+        return (
+            (dir1 === 'left' && dir2 === 'right') ||
+            (dir1 === 'right' && dir2 === 'left') ||
+            (dir1 === 'up' && dir2 === 'down') ||
+            (dir1 === 'down' && dir2 === 'up')
+        );
+    }
+
+    // Enhanced gesture end with direction reversal detection
     _gestureEnd(
         _tracker: SwipeTracker,
         _duration: number,
         progress: AnimationState
     ): void {
-        console.log(`[TGC MediaControl] Gesture END - progress: ${progress}`);
+        console.log(
+            `[TGC MediaControl] Gesture END - progress: ${progress}, duration: ${_duration}`
+        );
+
+        // Check for direction reversal (pause/play gesture)
+        if (this._detectDirectionReversal()) {
+            console.log(
+                '[TGC MediaControl] Direction reversal detected - PlayPause'
+            );
+            this._callMpris('PlayPause');
+            return;
+        }
 
         // Normalize progress around DEFAULT and determine direction
         let state = progress;
@@ -141,6 +218,43 @@ export class MediaControlGestureExtension implements ISubExtension {
                 console.log('[TGC MediaControl] State is DEFAULT, no action');
                 break;
         }
+    }
+
+    // Detect if user swiped in one direction then reversed
+    private _detectDirectionReversal(): boolean {
+        // Need at least 2 direction changes (initial direction + reversal)
+        if (this._directionHistory.length < 2) {
+            return false;
+        }
+
+        const gestureDuration = Date.now() - this._gestureStartTime;
+
+        // Must be quick gesture (< 500ms) to avoid accidental triggers
+        if (gestureDuration > 500) {
+            return false;
+        }
+
+        // Check that first and second directions are opposite
+        const first = this._directionHistory[0];
+        const second = this._directionHistory[1];
+
+        // Time between direction changes should be quick (< 300ms)
+        const timeBetween = second.timestamp - first.timestamp;
+
+        if (timeBetween > 300) {
+            console.log(
+                '[TGC MediaControl] Direction change too long, ignoring',
+                {
+                    first,
+                    second,
+                },
+                timeBetween
+            );
+            return false;
+        }
+
+        // Verify they're opposite directions
+        return this._isOppositeDirection(first.direction, second.direction);
     }
 
     private _callMpris(method: 'Next' | 'Previous' | 'PlayPause' | 'Stop') {
@@ -232,68 +346,5 @@ export class MediaControlGestureExtension implements ISubExtension {
         } catch (e) {
             console.log(`[TGC MediaControl] MPRIS ${method} failed: ${e}`);
         }
-    }
-
-    // TODO: experiment with short time hold as a tap gesture
-    _handleHoldEvent(event: CustomEventType): void {
-        const phase = event.get_gesture_phase();
-        const fingerCount = event.get_touchpad_gesture_finger_count();
-        console.log(
-            '[TGC MediaControl] Hold gesture event: ',
-            phase,
-            ' ',
-            fingerCount,
-            ' ',
-            event.type()
-        );
-
-        if (phase === Clutter.TouchpadGesturePhase.BEGIN) {
-            this._holdGestureBeginTime = event.get_time();
-        } else if (phase === Clutter.TouchpadGesturePhase.END) {
-            console.log('[TGC MediaControl] Hold gesture end');
-
-            if (this._holdGestureBeginTime === undefined) {
-                console.log(
-                    '[TGC MediaControl] Hold gesture end without begin time'
-                );
-                return;
-            }
-
-            const duration = event.get_time() - this._holdGestureBeginTime;
-            console.log('[TGC MediaControl] Hold gesture duration: ', duration);
-
-            // If hold was very brief (<200ms) and 4 fingers, treat as tap
-            if (duration < 200 && fingerCount === 4) {
-                console.log('[TGC MediaControl] Hold gesture detected as tap');
-                this._callMpris('PlayPause');
-            }
-        }
-    }
-
-    private _connectHoldListenerOnce() {
-        if (this._stageHoldHandler) return;
-        console.log('[TGC MediaControl] Connecting hold listener');
-        this._stageHoldHandler = global.stage.connect(
-            'captured-event::touchpad',
-            (_actor, event: CustomEventType) => {
-                const type = event.type();
-                const phase = event.get_gesture_phase?.();
-                const fingers = event.get_touchpad_gesture_finger_count?.();
-
-                console.log(
-                    '[TGC] touchpad',
-                    type,
-                    'phase=',
-                    phase,
-                    'fingers=',
-                    fingers
-                );
-
-                if (event.type() === Clutter.EventType.TOUCHPAD_HOLD)
-                    this._handleHoldEvent(event);
-                return Clutter.EVENT_PROPAGATE;
-            }
-        );
-        console.log('[TGC MediaControl] Hold listener connected');
     }
 }
