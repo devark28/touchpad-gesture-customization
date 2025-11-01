@@ -276,6 +276,19 @@ export class MediaControlGestureExtension implements ISubExtension {
         this._stageHoldHandler = global.stage.connect(
             'captured-event::touchpad',
             (_actor, event: CustomEventType) => {
+                const type = event.type();
+                const phase = event.get_gesture_phase?.();
+                const fingers = event.get_touchpad_gesture_finger_count?.();
+
+                console.log(
+                    '[TGC] touchpad',
+                    type,
+                    'phase=',
+                    phase,
+                    'fingers=',
+                    fingers
+                );
+
                 if (event.type() === Clutter.EventType.TOUCHPAD_HOLD)
                     this._handleHoldEvent(event);
                 return Clutter.EVENT_PROPAGATE;
